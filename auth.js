@@ -24,7 +24,7 @@ const GridWiseAuth = (function () {
   const SESSION_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
   const STORAGE_KEY_USERS = 'gridwise_vault_users_v1';
   const STORAGE_KEY_SESSION = 'gridwise_session_v1';
-  let _backendBase = 'http://localhost:3000/api/auth';
+  let _backendBase = '/api/auth';
   let _apiAvailable = false;
   let _currentUser = null;
   let _sessionExpiryTimer = null;
@@ -764,11 +764,11 @@ const GridWiseAuth = (function () {
   async function init() {
     await seedDefaultAccounts();
 
-    // Check optional backend presence (try port 3000, then fallback to 3001)
+    // Check backend presence: try relative /api/auth/health first (works on Vercel and localhost), then fallback ports
     try {
-      let ping = await fetch(`http://localhost:3000/api/auth/health`, { method: 'GET', signal: AbortSignal.timeout(1000) });
+      let ping = await fetch(`/api/auth/health`, { method: 'GET', signal: AbortSignal.timeout(1500) });
       if (ping.ok) {
-        _backendBase = 'http://localhost:3000/api/auth';
+        _backendBase = '/api/auth';
         _apiAvailable = true;
       }
     } catch (_) {
@@ -778,7 +778,13 @@ const GridWiseAuth = (function () {
           _backendBase = 'http://localhost:3001/api/auth';
           _apiAvailable = true;
         } else {
-          _apiAvailable = false;
+          let ping3000 = await fetch(`http://localhost:3000/api/auth/health`, { method: 'GET', signal: AbortSignal.timeout(1000) });
+          if (ping3000.ok) {
+            _backendBase = 'http://localhost:3000/api/auth';
+            _apiAvailable = true;
+          } else {
+            _apiAvailable = false;
+          }
         }
       } catch (__) {
         _apiAvailable = false;

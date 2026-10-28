@@ -12,6 +12,7 @@
 
 'use strict';
 
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
@@ -27,6 +28,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'gridwise_energy_os_secure_key_2026
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
+
+// Explicit root route for SPA / Vercel serverless compatibility
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Helper: PBKDF2 hash (100,000 iterations, SHA-256)
 function hashPassword(password, salt) {
