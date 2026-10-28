@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GridWise — Intelligent Energy Allocation & Simulation</title>
+  <meta name="description" content="GridWise is an intelligent energy allocation and simulation platform. It detects electricity shortages and automatically distributes available supply between hospitals, residential communities, and industrial facilities." />
+  <meta name="keywords" content="energy allocation, grid management, power distribution, simulation, energy shortage, smart grid" />
+  <link rel="icon" type="image/jpeg" href="logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- AUTHENTICATION SCREEN (Reference UI Match) -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="auth-screen active" id="authScreen" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="auth-split-wrapper">
+      
+      <!-- Left: Bright green energy-themed visual with glowing orb and hand -->
+      <div class="auth-visual-side">
+        <h1 class="sr-only" id="authTitle">GridWise Intelligent Energy Platform</h1>
+        <div class="auth-visual-card">
+          <img src="login-energy-visual.jpg" alt="GridWise Energy Orchestration - Intelligent Power Matrix" class="auth-visual-img" />
+          <div class="auth-visual-overlay">
+            <div class="auth-visual-badge">
+              <span class="auth-badge-dot"></span>
+              <span>GRIDWISE ENERGY OS</span>
+            </div>
+            <div class="auth-visual-content">
+              <h3>Intelligent Energy Matrix</h3>
+              <p>Autonomous load balancing and hospital priority protection.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Minimal Modern Login Form Container -->
+      <div class="auth-form-side">
+
+        <!-- Global Auth Alert Banner -->
+        <div class="auth-alert" id="authAlertBox" role="alert">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v4M8 11v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span id="authAlertMsg">Invalid credentials</span>
+        </div>
+
+        <!-- ── VIEW 1: SIGN IN (Reference Layout Match) ── -->
+        <div id="authViewLogin">
+          <div class="auth-header">
+            <h2 class="auth-brand-heading">GridWise</h2>
+            <p class="auth-brand-sub">Welcome back! Please enter your details.</p>
+          </div>
+
+          <form id="authLoginForm" novalidate>
+            <!-- Email Input -->
+            <div class="auth-field">
+              <label class="auth-label" for="loginEmail">Email</label>
+              <div class="auth-input-wrap">
+                <input type="email" id="loginEmail" class="auth-input" placeholder="Enter your email" required autocomplete="username" />
+              </div>
+            </div>
+
+            <!-- Password Input with Toggle -->
+            <div class="auth-field">
+              <label class="auth-label" for="loginPassword">Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required autocomplete="current-password" />
+                <button type="button" class="auth-toggle-pwd" data-target="loginPassword" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember me & Forgot Password options row -->
+            <div class="auth-options-row">
+              <label class="auth-checkbox-label">
+                <input type="checkbox" id="loginRemember" />
+                <span>Remember for 30 days</span>
+              </label>
+              <a href="#" class="auth-link-forgot" id="authToForgotBtn">Forgot password</a>
+            </div>
+
+            <!-- Green Login Button -->
+            <button type="submit" class="auth-btn-primary" id="btnLoginSubmit">
+              Log in
+            </button>
+
+            <!-- Google Sign-In Button -->
+            <button type="button" class="auth-btn-google" id="authGoogleBtn" title="Sign in with Google">
+              <svg viewBox="0 0 24 24" width="18" height="18" class="auth-google-icon">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Sign in with Google</span>
+            </button>
+
+            <!-- Quick Demo Operator Autofill -->
+            <button type="button" class="auth-btn-demo" id="authDemoBtn" title="Autofill and sign in with demo operator credentials">
+              <span>⚡ Autofill Demo Operator (Dr. Elena Vance)</span>
+            </button>
+
+            <!-- Registration Link -->
+            <div class="auth-switch-prompt">
+              <span>Don't have an account?</span>
+              <a href="#" class="auth-link-register" id="authToSignupBtn">Sign up</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- ── VIEW 2: SIGN UP ── -->
+        <div id="authViewSignup" style="display:none">
+          <div class="auth-card-header">
+            <h2 class="auth-card-title">Register Operator</h2>
+            <p class="auth-card-sub">Establish a new authorized dispatch profile in the vault.</p>
+          </div>
+
+          <form id="authSignupForm" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="signupName">Full Name</label>
+              <div class="auth-input-wrap">
+                <input type="text" id="signupName" class="auth-input" placeholder="e.g. Dr. Marcus Vance" required />
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="signupEmail">Operator Email</label>
+              <div class="auth-input-wrap">
+                <input type="email" id="signupEmail" class="auth-input" placeholder="operator@cleanpower.org" required />
+              </div>
+            </div>
+
+            <div class="auth-field-row">
+              <div class="auth-field">
+                <label class="auth-label" for="signupRole">Grid Role</label>
+                <div class="auth-input-wrap">
+                  <input type="text" id="signupRole" class="auth-input" placeholder="Dispatch Engineer" />
+                </div>
+              </div>
+              <div class="auth-field">
+                <label class="auth-label" for="signupOrg">Utility / Facility</label>
+                <div class="auth-input-wrap">
+                  <input type="text" id="signupOrg" class="auth-input" placeholder="Metropolitan Substation" />
+                </div>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="signupPassword">Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="signupPassword" class="auth-input" placeholder="Min 8 chars with symbols" required />
+                <button type="button" class="auth-toggle-pwd" data-target="signupPassword" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+
+              <!-- Real-time Password Strength Meter -->
+              <div class="auth-pwd-strength" id="authPwdStrength">
+                <div class="auth-pwd-bar-track">
+                  <div class="auth-pwd-bar-fill" id="authPwdBar"></div>
+                </div>
+                <div class="auth-pwd-meta">
+                  <span id="authPwdLabel">Strength: Moderate</span>
+                  <span>Requires: 8+ chars, upper, lower, num, symbol</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="signupConfirmPassword">Confirm Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="signupConfirmPassword" class="auth-input" placeholder="Re-enter password" required />
+                <button type="button" class="auth-toggle-pwd" data-target="signupConfirmPassword" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-checkbox-label" style="font-size:0.72rem">
+                <input type="checkbox" id="signupTerms" required />
+                <span>I acknowledge operational compliance with automated load shedding and Hospital Priority 1 protocols.</span>
+              </label>
+            </div>
+
+            <button type="submit" class="auth-btn-primary" id="btnSignupSubmit">
+              Register Terminal Operator
+            </button>
+
+            <div class="auth-switch-prompt">
+              <span>Already authorized?</span>
+              <a href="#" class="auth-link" id="authToLoginBtn" style="margin-left:4px">Sign In</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- ── VIEW 3: FORGOT PASSWORD ── -->
+        <div id="authViewForgot" style="display:none">
+          <div class="auth-card-header">
+            <h2 class="auth-card-title">Security Recovery</h2>
+            <p class="auth-card-sub">Generate a cryptographic authorization token to reset terminal password.</p>
+          </div>
+
+          <!-- Step 1: Request Code -->
+          <div id="authForgotStep1">
+            <form id="authForgotRequestForm" novalidate>
+              <div class="auth-field">
+                <label class="auth-label" for="forgotEmail">Registered Operator Email</label>
+                <div class="auth-input-wrap">
+                  <input type="email" id="forgotEmail" class="auth-input" placeholder="operator@gridwise.energy" required />
+                </div>
+              </div>
+              <button type="submit" class="auth-btn-primary" id="btnForgotRequest">
+                Request Authorization Code
+              </button>
+            </form>
+          </div>
+
+          <!-- Step 2: Enter Token and New Password -->
+          <div id="authForgotStep2" style="display:none;margin-top:var(--space-md)">
+            <form id="authForgotCompleteForm" novalidate>
+              <div class="auth-field">
+                <label class="auth-label" for="forgotToken">6-Digit Authorization Code</label>
+                <div class="auth-input-wrap">
+                  <input type="text" id="forgotToken" class="auth-input" placeholder="e.g. 849201" maxlength="6" required />
+                </div>
+              </div>
+
+              <div class="auth-field">
+                <label class="auth-label" for="forgotNewPassword">New Password</label>
+                <div class="auth-input-wrap">
+                  <input type="password" id="forgotNewPassword" class="auth-input" placeholder="New secure password" required />
+                  <button type="button" class="auth-toggle-pwd" data-target="forgotNewPassword" aria-label="Toggle password visibility">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="auth-field">
+                <label class="auth-label" for="forgotConfirmPassword">Confirm New Password</label>
+                <div class="auth-input-wrap">
+                  <input type="password" id="forgotConfirmPassword" class="auth-input" placeholder="Confirm new password" required />
+                </div>
+              </div>
+
+              <button type="submit" class="auth-btn-primary" id="btnForgotComplete">
+                Reset &amp; Authorize
+              </button>
+            </form>
+          </div>
+
+          <div class="auth-switch-prompt">
+            <a href="#" class="auth-link" id="authBackToLoginBtn">← Return to Sign In</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Nav Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+  <!-- Main Application Shell -->
+  <div class="app-shell" id="appShell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="logo.jpg" alt="GridWise Logo" class="logo-img" width="36" height="36" style="width: 36px; height: 36px; max-width: 36px; max-height: 36px; border-radius: 50%; object-fit: cover; background: #ffffff; padding: 2px; border: 1.5px solid var(--orange); flex-shrink: 0; display: inline-block; vertical-align: middle;" />
+          <div class="logo-text">
+            <span class="logo-name">GridWise</span>
+            <span class="logo-sub">GRID OS · V2.0</span>
+          </div>
+        </div>
+        <p class="logo-tagline">Smarter allocation.<br>Stronger communities.</p>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <p class="nav-section-label">WORKSPACES</p>
+        <a href="#" class="nav-item active" id="nav-overview" onclick="navigateTo('overview', event)" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><circle cx="14.5" cy="14.5" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="nav-label">Overview</span>
+          <span class="nav-number">01</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-allocation" onclick="navigateTo('allocation', event)">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke="currentColor" stroke-width="1.5"/><path d="M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
+          <span class="nav-label">Energy Allocation</span>
+          <span class="nav-number">02</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-simulation" onclick="navigateTo('simulation', event)">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M3 10 L7 4 L11 12 L15 7 L18 10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 16h16" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
+          <span class="nav-label">Simulation Lab</span>
+          <span class="nav-number">03</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-analytics" onclick="navigateTo('analytics', event)">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="10" width="4" height="8" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="6" width="4" height="12" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="2" width="4" height="16" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="nav-label">Analytics &amp; Comparison</span>
+          <span class="nav-number">04</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-state-network" onclick="navigateTo('state-network', event)">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v5M10 13v5M2 10h5M13 10h5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="2" r="1.5" fill="currentColor"/><circle cx="10" cy="18" r="1.5" fill="currentColor"/><circle cx="2" cy="10" r="1.5" fill="currentColor"/><circle cx="18" cy="10" r="1.5" fill="currentColor"/></svg>
+          <span class="nav-label">State Network Visualization</span>
+          <span class="nav-number">05</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-settings" onclick="navigateTo('settings', event)">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.5A7.5 7.5 0 0 1 10 17.5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M10 2.5A7.5 7.5 0 0 0 10 17.5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+          <span class="nav-label">Settings</span>
+          <span class="nav-number">06</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <!-- Authenticated Operator Profile -->
+        <div class="auth-sidebar-profile" id="authSidebarProfile">
+          <div class="auth-profile-meta">
+            <div class="auth-avatar-circle" id="authSidebarAvatar">EV</div>
+            <div class="auth-profile-names">
+              <span class="auth-op-name" id="authSidebarOpName">Dr. Elena Vance</span>
+              <span class="auth-op-role" id="authSidebarOpRole">Lead Grid Controller</span>
+            </div>
+          </div>
+          <button class="auth-logout-icon-btn auth-sign-out-btn" title="Sign out of operations terminal" aria-label="Sign out">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          </button>
+        </div>
+
+        <div class="grid-status-indicator">
+          <span class="status-dot" id="sidebarStatusDot"></span>
+          <span class="status-text">GRID SUPPLY</span>
+          <span class="status-value" id="sidebarStatusValue">100 kWh</span>
+        </div>
+        <div class="sidebar-footer-row">
+          <span class="footer-label">ENGINE STATE</span>
+          <span class="footer-value" id="sidebarGridState">STABLE</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+
+      <!-- ⚡ Automatic Allocation Engine Status Banner -->
+      <div class="engine-banner normal-banner" id="engineStatusBanner" role="status" aria-live="polite">
+        <div class="engine-banner-left">
+          <span class="status-dot green" id="engineBannerDot"></span>
+          <span class="engine-banner-msg" id="engineStatusMsg">Allocation engine initialising…</span>
+        </div>
+        <div class="engine-banner-right">
+          <div class="engine-mode-group">
+            <span class="mode-label">MODE:</span>
+            <div class="mode-toggle-pills" role="radiogroup" aria-label="System Operating Mode">
+              <button type="button" class="mode-toggle-pill active" id="modePillAuto" onclick="setEngineMode('auto')" title="Auto Mode: continuous real-time allocation on input change">🤖 AUTO</button>
+              <button type="button" class="mode-toggle-pill" id="modePillManual" onclick="setEngineMode('manual')" title="Manual Mode: configure inputs and explicitly apply changes">🎛️ MANUAL</button>
+            </div>
+            <span class="mode-status-badge" id="modeStatusBadge">REAL-TIME</span>
+          </div>
+          <span class="engine-banner-meta"><span id="authBannerOp">OPERATOR: DR. ELENA VANCE</span> · LAST UPDATED: <span id="lastUpdatedTime">—</span></span>
+        </div>
+      </div>
+
+      <!-- Mobile Header -->
+      <header class="mobile-header">
+        <button class="hamburger" id="hamburgerBtn" onclick="openMobileNav()" aria-label="Open navigation menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-logo">
+          <img src="logo.jpg" alt="GridWise Logo" class="mobile-logo-img" width="28" height="28" style="width: 28px; height: 28px; max-width: 28px; max-height: 28px; border-radius: 50%; object-fit: cover; background: #ffffff; padding: 1.5px; border: 1.5px solid var(--orange); flex-shrink: 0; display: inline-block; vertical-align: middle;" />
+          <span class="logo-name">GridWise</span>
+        </div>
+        <div class="mobile-status">
+          <span class="status-dot" id="mobileStatusDot"></span>
+        </div>
+      </header>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 01: OVERVIEW                          -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page active" id="page-overview" aria-labelledby="overview-title">
+      <div class="page-header">
+        <div class="page-header-left">
+          <span class="page-eyebrow">GRID OPERATIONS · LIVE STATUS</span>
+          <h1 class="page-title" id="overview-title">Grid Operations</h1>
+          <p class="page-subtitle">Monitor energy availability, detect shortages, and understand how available supply is distributed.</p>
+        </div>
+        <div class="page-header-right">
+          <div class="header-badge" id="overviewStatusBadge">
+            <span class="badge-dot"></span>
+            <span id="overviewStatusText">SUPPLY SUFFICIENT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics Strip -->
+      <div class="status-strip" role="region" aria-label="Energy Status Metrics">
+        <div class="strip-metric">
+          <p class="strip-label">AVAILABLE SUPPLY</p>
+          <p class="strip-value" id="ov-available">100 <span class="strip-unit">kWh</span></p>
+          <p class="strip-sub">Grid + Solar + Battery</p>
+        </div>
+        <div class="strip-divider"></div>
+        <div class="strip-metric">
+          <p class="strip-label">TOTAL DEMAND</p>
+          <p class="strip-value" id="ov-demand">150 <span class="strip-unit">kWh</span></p>
+          <p class="strip-sub">All consumer zones</p>
+        </div>
+        <div class="strip-divider"></div>
+        <div class="strip-metric shortage">
+          <p class="strip-label">ENERGY SHORTAGE</p>
+          <p class="strip-value orange" id="ov-shortage">50 <span class="strip-unit">kWh</span></p>
+          <p class="strip-sub orange-sub">Shortage Detected</p>
+        </div>
+        <div class="strip-divider"></div>
+        <div class="strip-metric">
+          <p class="strip-label">SUPPLY COVERAGE</p>
+          <p class="strip-value" id="ov-coverage">66.7 <span class="strip-unit">%</span></p>
+          <p class="strip-sub">Demand satisfaction rate</p>
+        </div>
+      </div>
+
+      <!-- Grid Diagram + Allocation Panel -->
+      <div class="hero-section">
+        <!-- SVG Energy Network Diagram -->
+        <div class="grid-diagram-panel" role="img" aria-label="Electricity distribution network diagram showing generation source, substation, and consumer connections">
+          <div class="panel-header">
+            <div>
+              <span class="panel-eyebrow">DISTRIBUTION NETWORK</span>
+              <h2 class="panel-title">Energy Flow Diagram</h2>
+            </div>
+            <div class="panel-badge">AUTO-ROUTING ACTIVE</div>
+          </div>
+          <div class="diagram-container">
+            <svg id="gridDiagram" viewBox="0 0 710 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#184D38" stroke-width="0.3" opacity="0.2"/>
+                </pattern>
+                <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#184D38"/>
+                </marker>
+                <marker id="arrow-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#F28C38"/>
+                </marker>
+              </defs>
+              <rect width="710" height="400" fill="#F5F1E8"/>
+              <rect width="710" height="400" fill="url(#grid-pattern)"/>
+
+              <!-- ── 5 DISTINCT INCOMING ENERGY SOURCES (Left Column) ── -->
+              <!-- 1. Solar PV -->
+              <g id="ov-node-solar" class="diagram-source-node">
+                <rect x="20" y="24" width="98" height="44" rx="3" fill="#184D38" stroke="#184D38" stroke-width="1.2"/>
+                <text x="30" y="40" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="8" font-weight="700">☀️ SOLAR PV</text>
+                <text x="30" y="56" fill="#F28C38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" id="ov-diagram-solar-val">40 kWh</text>
+              </g>
+              <line x1="118" y1="46" x2="255" y2="180" stroke="#184D38" stroke-width="2.2" class="flow-line" id="ov-flow-solar" marker-end="url(#arrow-green)"/>
+
+              <!-- 2. Wind Generation -->
+              <g id="ov-node-wind" class="diagram-source-node">
+                <rect x="20" y="80" width="98" height="44" rx="3" fill="#184D38" stroke="#184D38" stroke-width="1.2"/>
+                <text x="30" y="96" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="8" font-weight="700">🌬️ WIND</text>
+                <text x="30" y="112" fill="#F28C38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" id="ov-diagram-wind-val">35 kWh</text>
+              </g>
+              <line x1="118" y1="102" x2="255" y2="185" stroke="#184D38" stroke-width="2.2" class="flow-line" id="ov-flow-wind" marker-end="url(#arrow-green)"/>
+
+              <!-- 3. Hydro Generation -->
+              <g id="ov-node-hydro" class="diagram-source-node">
+                <rect x="20" y="136" width="98" height="44" rx="3" fill="#184D38" stroke="#184D38" stroke-width="1.2"/>
+                <text x="30" y="152" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="8" font-weight="700">💧 HYDRO</text>
+                <text x="30" y="168" fill="#F28C38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" id="ov-diagram-hydro-val">25 kWh</text>
+              </g>
+              <line x1="118" y1="158" x2="255" y2="190" stroke="#184D38" stroke-width="2.2" class="flow-line" id="ov-flow-hydro" marker-end="url(#arrow-green)"/>
+
+              <!-- 4. External Grid Supply (Imported Utility Grid) -->
+              <g id="ov-node-grid" class="diagram-source-node">
+                <rect x="20" y="192" width="98" height="44" rx="3" fill="#184D38" stroke="#184D38" stroke-width="1.2"/>
+                <text x="30" y="208" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="8" font-weight="700">⚡ EXT GRID</text>
+                <text x="30" y="224" fill="#F28C38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" id="ov-diagram-grid-val">0 kWh</text>
+              </g>
+              <line x1="118" y1="214" x2="255" y2="195" stroke="#184D38" stroke-width="2.2" class="flow-line idle" id="ov-flow-grid" marker-end="url(#arrow-green)"/>
+
+              <!-- 5. Battery Storage (BESS Reserve) -->
+              <g id="ov-node-battery" class="diagram-source-node">
+                <rect x="20" y="248" width="98" height="44" rx="3" fill="#184D38" stroke="#184D38" stroke-width="1.2"/>
+                <text x="30" y="264" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="8" font-weight="700">🔋 BESS DISCH.</text>
+                <text x="30" y="280" fill="#F28C38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" id="ov-diagram-batt-val">0 kWh</text>
+              </g>
+              <line x1="118" y1="270" x2="255" y2="200" stroke="#184D38" stroke-width="2.2" class="flow-line idle" id="ov-flow-battery" marker-end="url(#arrow-green)"/>
+
+              <!-- Central Substation / GridWise Engine -->
+              <g id="sub-node">
+                <circle cx="295" cy="190" r="34" fill="none" stroke="#184D38" stroke-width="2"/>
+                <circle cx="295" cy="190" r="24" fill="#184D38" stroke="#184D38" stroke-width="1"/>
+                <circle cx="295" cy="190" r="10" fill="#F28C38"/>
+                <text x="295" y="234" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700">GRIDWISE ENGINE</text>
+                <text x="295" y="246" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" id="diagram-bus-label">100 kWh SUPPLY</text>
+                <text x="295" y="258" text-anchor="middle" fill="#F28C38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" id="diagram-shortage-label">−50 kWh DEFICIT</text>
+              </g>
+
+              <!-- Hospital Branch (Priority 1) -->
+              <line x1="330" y1="172" x2="455" y2="100" stroke="#184D38" stroke-width="2.5" class="flow-line" id="ov-flow-hosp" marker-end="url(#arrow-green)"/>
+              <g id="hospital-node">
+                <rect x="455" y="68" width="125" height="58" rx="3" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                <rect x="455" y="68" width="125" height="16" fill="#184D38"/>
+                <text x="517" y="80" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8" font-weight="700">HOSPITAL [P1]</text>
+                <text x="517" y="100" text-anchor="middle" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700" id="hosp-alloc-label">30 / 30 kWh</text>
+                <text x="517" y="116" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700" id="hosp-status-label">FULLY MET</text>
+              </g>
+              <text x="400" y="120" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" font-weight="700" transform="rotate(-26, 400, 120)" id="hosp-line-label">30 kWh</text>
+
+              <!-- Residential Branch (Priority 2) -->
+              <line x1="330" y1="190" x2="455" y2="190" stroke="#184D38" stroke-width="2.5" class="flow-line" id="ov-flow-res" marker-end="url(#arrow-green)"/>
+              <line x1="580" y1="190" x2="635" y2="190" stroke="#F28C38" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrow-orange)" id="ov-unmet-line-res"/>
+              <g id="residential-node">
+                <rect x="455" y="163" width="125" height="54" rx="3" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                <rect x="455" y="163" width="125" height="16" fill="#184D38"/>
+                <text x="517" y="175" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8" font-weight="700">RESIDENTIAL [P2]</text>
+                <text x="517" y="195" text-anchor="middle" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700" id="res-alloc-label">45 / 70 kWh</text>
+                <text x="517" y="210" text-anchor="middle" fill="#F28C38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700" id="res-status-label">−25 kWh UNMET</text>
+              </g>
+              <rect x="635" y="177" width="65" height="26" rx="2" fill="#F28C38" id="ov-unmet-box-res"/>
+              <text x="667" y="188" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="7" id="res-unmet-box1">UNMET</text>
+              <text x="667" y="199" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8" font-weight="700" id="res-unmet-box2">25 kWh</text>
+              <text x="400" y="183" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" font-weight="700" id="res-line-label">45 kWh</text>
+
+              <!-- Industrial Branch (Priority 3) -->
+              <line x1="330" y1="208" x2="455" y2="280" stroke="#184D38" stroke-width="2.5" class="flow-line" id="ov-flow-ind" marker-end="url(#arrow-green)"/>
+              <line x1="580" y1="290" x2="635" y2="330" stroke="#F28C38" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrow-orange)" id="ov-unmet-line-ind"/>
+              <g id="industrial-node">
+                <rect x="455" y="255" width="125" height="54" rx="3" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                <rect x="455" y="255" width="125" height="16" fill="#184D38"/>
+                <text x="517" y="267" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8" font-weight="700">INDUSTRIAL [P3]</text>
+                <text x="517" y="287" text-anchor="middle" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700" id="ind-alloc-label">25 / 50 kWh</text>
+                <text x="517" y="302" text-anchor="middle" fill="#F28C38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700" id="ind-status-label">−25 kWh UNMET</text>
+              </g>
+              <rect x="635" y="317" width="65" height="26" rx="2" fill="#F28C38" id="ov-unmet-box-ind"/>
+              <text x="667" y="328" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="7" id="ind-unmet-box1">UNMET</text>
+              <text x="667" y="339" text-anchor="middle" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8" font-weight="700" id="ind-unmet-box2">25 kWh</text>
+              <text x="400" y="252" text-anchor="middle" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" font-weight="700" transform="rotate(24, 400, 252)" id="ind-line-label">25 kWh</text>
+
+              <!-- Legend -->
+              <g transform="translate(20, 320)">
+                <line x1="0" y1="7" x2="26" y2="7" stroke="#184D38" stroke-width="2.5" class="flow-line"/>
+                <text x="32" y="11" fill="#184D38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700">ACTIVE FLOW PARTICLES</text>
+                <line x1="0" y1="22" x2="26" y2="22" stroke="#F28C38" stroke-width="2" stroke-dasharray="4 3"/>
+                <text x="32" y="26" fill="#F28C38" font-family="'Space Mono',monospace" font-size="7.5" font-weight="700">UNMET SHORTAGE</text>
+                <line x1="160" y1="7" x2="186" y2="7" stroke="#184D38" stroke-width="1.5" stroke-dasharray="2 4" opacity="0.4"/>
+                <text x="192" y="11" fill="rgba(24,77,56,0.6)" font-family="'Space Mono',monospace" font-size="7.5">ZERO/IDLE PATH</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Allocation Status Panel -->
+        <div class="allocation-status-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-eyebrow">CONSUMER ZONES · ALLOCATION</span>
+              <h2 class="panel-title">Allocation Status</h2>
+            </div>
+            <div class="orange-badge" id="overviewAllocBadge">SHORTAGE ACTIVE</div>
+          </div>
+
+          <div class="tier-list" id="overviewTierList">
+            <div class="tier-item">
+              <div class="tier-header">
+                <p class="tier-label">TIER 1 — HOSPITALS &amp; HEALTHCARE</p>
+                <div class="tier-values">
+                  <span class="tier-alloc" id="ov-hosp-val">30 / 30 kWh (100%)</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="ov-hosp-bar" style="width:100%"></div>
+              </div>
+              <div class="tier-footer">
+                <span class="tier-note" id="ov-hosp-note">Zero curtailment — protected load</span>
+                <span class="tier-tag" id="ov-hosp-tag">Protected</span>
+              </div>
+            </div>
+
+            <div class="tier-divider"></div>
+
+            <div class="tier-item">
+              <div class="tier-header">
+                <p class="tier-label">TIER 2 — RESIDENTIAL COMMUNITIES</p>
+                <div class="tier-values">
+                  <span class="tier-alloc" id="ov-res-val">45 / 70 kWh (64.3%)</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="ov-res-bar" style="width:64.3%"></div>
+              </div>
+              <div class="tier-footer">
+                <span class="tier-note">Essential services maintained</span>
+                <span class="tier-tag orange-tag" id="ov-res-shed">−25 kWh Shed</span>
+              </div>
+            </div>
+
+            <div class="tier-divider"></div>
+
+            <div class="tier-item">
+              <div class="tier-header">
+                <p class="tier-label">TIER 3 — INDUSTRIAL FACILITIES</p>
+                <div class="tier-values">
+                  <span class="tier-alloc" id="ov-ind-val">25 / 50 kWh (50%)</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="ov-ind-bar" style="width:50%"></div>
+              </div>
+              <div class="tier-footer">
+                <span class="tier-note">Partial operations</span>
+                <span class="tier-tag orange-tag" id="ov-ind-shed">−25 kWh Shed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-block">
+            <p class="insight-eyebrow">ALLOCATION DECISION</p>
+            <p class="insight-text" id="overviewInsight">Available supply meets 66.7% of demand. The allocation engine has applied priority-based distribution — hospital demand is fully protected, and remaining supply is divided across residential and industrial zones.</p>
+            <div class="insight-actions">
+              <button class="btn-primary" id="runSimulationBtn" onclick="navigateTo('simulation', event)">Open Simulation Lab</button>
+              <button class="btn-secondary" id="viewAllocationBtn" onclick="navigateTo('allocation', event)">View Allocation Detail</button>
+            </div>
+            <p class="engine-last-recalc">Engine recalculates automatically on every input change. <span id="ovLastTime"></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 🇮🇳 INDIA LIVE GRID OPERATIONS TELEMETRY     -->
+      <!-- Real-time data from Vidyut Pravah & MERIT  -->
+      <!-- ══════════════════════════════════════════ -->
+      <div class="india-grid-card" id="indiaGridSection" role="region" aria-labelledby="india-panel-title">
+        <div class="india-panel-header">
+          <div class="india-header-left">
+            <div class="india-eyebrow-row">
+              <span class="panel-eyebrow">REAL-TIME NATIONAL TELEMETRY</span>
+              <span class="india-live-pulse-badge" id="indiaConnectionBadge">
+                <span class="badge-dot green" id="indiaPulseDot"></span>
+                <span id="indiaConnectionStatus">CONNECTING PROXY...</span>
+              </span>
+              <span class="india-method-badge measured" id="indiaMethodBadge">MEASURED SCADA</span>
+            </div>
+            <h2 class="india-panel-title" id="india-panel-title">
+              <span class="flag-icon">🇮🇳</span> India Live Grid Operations
+            </h2>
+            <p class="india-panel-sub">
+              Empirical electricity demand, generation mix, and carbon emissions across India's synchronous grid. Upstream: <strong>Vidyut Pravah</strong>, <strong>MERIT</strong>, and State SLDC SCADA feeds.
+            </p>
+          </div>
+
+          <div class="india-header-right">
+            <div class="india-controls-wrap">
+              <div class="india-select-group">
+                <label for="indiaZoneSelect" class="india-select-label">REGIONAL ZONE:</label>
+                <select id="indiaZoneSelect" class="data-select india-zone-select" onchange="onIndiaZoneChange(this.value)">
+                  <option value="IN" selected>🇮🇳 Default / All India (National Grid)</option>
+                  <option value="IN-MH">Maharashtra (IN-MH) · Measured SCADA</option>
+                  <option value="IN-GJ">Gujarat (IN-GJ) · Merit Order</option>
+                  <option value="IN-KA">Karnataka (IN-KA) · Measured SCADA</option>
+                  <option value="IN-TN">Tamil Nadu (IN-TN) · Merit Order</option>
+                  <option value="IN-UP">Uttar Pradesh (IN-UP) · Merit Order</option>
+                  <option value="IN-DL">Delhi (IN-DL) · Measured SCADA</option>
+                  <option value="IN-PB">Punjab (IN-PB) · Measured SCADA</option>
+                  <option value="IN-CG">Chhattisgarh (IN-CG) · Measured SCADA</option>
+                  <option value="IN-RJ">Rajasthan (IN-RJ) · Merit Order</option>
+                  <option value="IN-MP">Madhya Pradesh (IN-MP) · Merit Order</option>
+                  <option value="IN-TS">Telangana (IN-TS) · Merit Order</option>
+                  <option value="IN-AP">Andhra Pradesh (IN-AP) · Merit Order</option>
+                  <option value="IN-WB">West Bengal (IN-WB) · Merit Order</option>
+                  <option value="IN-HR">Haryana (IN-HR) · Merit Order</option>
+                  <option value="IN-BR">Bihar (IN-BR) · Merit Order</option>
+                  <option value="IN-OD">Odisha (IN-OD) · Merit Order</option>
+                  <option value="IN-KL">Kerala (IN-KL) · Merit Order</option>
+                  <option value="IN-JK">Jammu &amp; Kashmir (IN-JK) · Vidyut Pravah</option>
+                  <option value="IN-UK">Uttarakhand (IN-UK) · Merit Order</option>
+                  <option value="IN-AS">Assam (IN-AS) · Merit Order</option>
+                  <option value="IN-JH">Jharkhand (IN-JH) · Merit Order</option>
+                  <option value="IN-HP">Himachal Pradesh (IN-HP) · Merit Order</option>
+                  <option value="IN-GA">Goa (IN-GA) · Merit Order</option>
+                  <option value="IN-PY">Puducherry (IN-PY) · Merit Order</option>
+                  <option value="IN-TR">Tripura (IN-TR) · Merit Order</option>
+                  <option value="IN-ML">Meghalaya (IN-ML) · Merit Order</option>
+                  <option value="IN-CH">Chandigarh (IN-CH) · Merit Order</option>
+                  <option value="IN-MN">Manipur (IN-MN) · Merit Order</option>
+                  <option value="IN-AR">Arunachal Pradesh (IN-AR) · Merit Order</option>
+                  <option value="IN-NL">Nagaland (IN-NL) · Merit Order</option>
+                  <option value="IN-MZ">Mizoram (IN-MZ) · Merit Order</option>
+                  <option value="IN-SK">Sikkim (IN-SK) · Merit Order</option>
+                  <option value="IN-LA">Ladakh (IN-LA) · Vidyut Pravah</option>
+                  <option value="IN-DD">Daman &amp; Diu (IN-DD) · Merit Order</option>
+                  <option value="IN-DN">Dadra &amp; Nagar Haveli (IN-DN) · Merit Order</option>
+                </select>
+              </div>
+
+              <div class="india-actions-group">
+                <button type="button" class="btn-outline small-btn" id="btnRefreshIndia" onclick="refreshIndiaGridData(true)" title="Fetch latest 5-min readings from API proxy">
+                  🔄 Refresh
+                </button>
+                <div class="india-timer-box" title="Automatic proxy polling interval">
+                  <span class="timer-label">POLL:</span>
+                  <span class="timer-value" id="indiaCountdown">05:00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry Data Provenance Banner -->
+        <div class="india-meta-bar" id="indiaMetaBar">
+          <div class="india-meta-item">
+            <span class="meta-label">SOURCE:</span>
+            <span class="meta-val" id="indiaDataSource">Vidyut Pravah / MERIT (MoP)</span>
+          </div>
+          <div class="india-meta-divider"></div>
+          <div class="india-meta-item">
+            <span class="meta-label">MEASUREMENT TS:</span>
+            <span class="meta-val" id="indiaDataTimestamp">—</span>
+          </div>
+          <div class="india-meta-divider"></div>
+          <div class="india-meta-item">
+            <span class="meta-label">DATA FRESHNESS:</span>
+            <span class="meta-val" id="indiaDataFreshness"><span class="freshness-tag tag-live">● Live &lt; 15m</span></span>
+          </div>
+          <div class="india-meta-divider"></div>
+          <div class="india-meta-item">
+            <span class="meta-label">PROXY CACHE:</span>
+            <span class="meta-val" id="indiaCacheStatus">5-Min TTL Active</span>
+          </div>
+        </div>
+
+        <!-- KPI Metrics Grid (National/State Grid Scale in MW & gCO2/kWh) -->
+        <div class="india-kpi-grid">
+          <!-- KPI 1: Demand Met (MW) -->
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">ELECTRICITY DEMAND MET</span>
+              <span class="india-unit-badge">GRID-SCALE MW</span>
+            </div>
+            <div class="india-kpi-main">
+              <span class="india-kpi-val" id="indiaDemandVal">—</span>
+              <span class="india-kpi-unit">MW</span>
+            </div>
+            <div class="india-kpi-sub" id="indiaDemandGWh">≈ — GWh hourly rate</div>
+            <div class="india-kpi-footer">
+              <span class="india-prov-tag" id="indiaDemandProv">Official Dispatch Met</span>
+            </div>
+          </div>
+
+          <!-- KPI 2: Total Monitored Generation (MW) -->
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">MONITORED GENERATION</span>
+              <span class="india-unit-badge">GRID-SCALE MW</span>
+            </div>
+            <div class="india-kpi-main">
+              <span class="india-kpi-val" id="indiaGenVal">—</span>
+              <span class="india-kpi-unit">MW</span>
+            </div>
+            <div class="india-kpi-sub" id="indiaNetImportSub">Net Import / Own-Gen Dispatch</div>
+            <div class="india-kpi-footer">
+              <span class="india-prov-tag" id="indiaGenProv">SCADA + Merit Order</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: Clean & Renewable Energy (MW & %) -->
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">RENEWABLE &amp; CLEAN SHARE</span>
+              <span class="india-unit-badge green-badge">ZERO CARBON</span>
+            </div>
+            <div class="india-kpi-main">
+              <span class="india-kpi-val green" id="indiaRenewableVal">—</span>
+              <span class="india-kpi-unit" id="indiaRenewableUnit">MW</span>
+            </div>
+            <div class="india-kpi-sub" id="indiaRenewablePct">—% of monitored fuel mix</div>
+            <div class="india-kpi-footer">
+              <span class="india-prov-tag" id="indiaRenewableProv">Wind · Hydro · Solar · Biomass</span>
+            </div>
+          </div>
+
+          <!-- KPI 4: Carbon Intensity (gCO2/kWh) -->
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">CARBON INTENSITY</span>
+              <span class="india-unit-badge orange-badge">EMISSIONS</span>
+            </div>
+            <div class="india-kpi-main">
+              <span class="india-kpi-val orange" id="indiaCarbonVal">—</span>
+              <span class="india-kpi-unit" id="indiaCarbonUnit">gCO₂/kWh</span>
+            </div>
+            <div class="india-kpi-sub" id="indiaCarbonBasis">CEA Baseline Factor Analysis</div>
+            <div class="india-kpi-footer">
+              <span class="india-prov-tag" id="indiaCarbonTag">Grid Emission Metric</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fuel Mix Visualizer & Progress Bar -->
+        <div class="india-fuel-breakdown-card">
+          <div class="india-fuel-header">
+            <div>
+              <h3 class="india-card-heading" id="indiaFuelCardHeading">Empirical Generation Fuel Mix</h3>
+              <p class="india-card-desc" id="indiaFuelCardDesc">Breakdown across thermal baseload, renewable hydro/wind/solar, and peaking units.</p>
+            </div>
+            <div class="india-badge-legend" id="indiaFuelLegend">
+              <span class="badge-legend-item"><span class="badge-dot-square coal"></span> Coal</span>
+              <span class="badge-legend-item"><span class="badge-dot-square wind"></span> Wind</span>
+              <span class="badge-legend-item"><span class="badge-dot-square hydro"></span> Hydro</span>
+              <span class="badge-legend-item"><span class="badge-dot-square solar"></span> Solar</span>
+              <span class="badge-legend-item"><span class="badge-dot-square gas"></span> Gas</span>
+              <span class="badge-legend-item"><span class="badge-dot-square biomass"></span> Biomass</span>
+            </div>
+          </div>
+
+          <!-- Stacked Horizontal Proportion Bar -->
+          <div class="india-stacked-bar-container" id="indiaStackedBar" aria-label="Fuel mix distribution bar">
+            <!-- Dynamically populated fuel segments -->
+          </div>
+
+          <!-- Fuel Items Grid -->
+          <div class="india-fuel-chips" id="indiaFuelChips">
+            <!-- Dynamically populated fuel chips with MW, % share, and [MEASURED]/[ESTIMATED] status -->
+          </div>
+        </div>
+
+        <!-- Microgrid Linkage Box (Requirement 7 & 9) -->
+        <div class="india-microgrid-link-box">
+          <div class="india-link-left">
+            <div class="link-icon-wrap">⚡</div>
+            <div>
+              <h4 class="link-title">Simulation Engine Integration — Live Indian Mix Calibration</h4>
+              <p class="link-desc">
+                Calibrate the local 100 kWh renewable generation mix using the <em>exact proportions</em> of Solar, Wind, and Hydro from the live Indian grid. 
+                <strong>Data Integrity Guarantee:</strong> Consumer demands (Hospital 30 kWh, Residential 70 kWh, Industrial 50 kWh) and Tier 1 Hospital Critical Protection remain strictly unaltered.
+              </p>
+            </div>
+          </div>
+          <div class="india-link-right">
+            <button type="button" class="btn-primary" id="btnCalibrateIndiaMix" onclick="calibrateMicrogridFromIndiaMix()">
+              ⚡ Calibrate Microgrid with Live Indian Mix
+            </button>
+            <span class="link-guarantee-note">✓ Demand &amp; P1 Hospital Allocation Inviolable</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sample-notice">
+        <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="#184D38" stroke-width="1.2"/><path d="M8 7v5M8 5v1" stroke="#184D38" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span>Illustrative simulation values. GridWise does not connect to or control real electrical infrastructure.</span>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 02: ENERGY ALLOCATION                 -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page" id="page-allocation" aria-labelledby="allocation-title">
+      <div class="page-header">
+        <div class="page-header-left">
+          <span class="page-eyebrow">ENERGY ALLOCATION · POLICY CONFIGURATION</span>
+          <h1 class="page-title" id="allocation-title">Energy Allocation</h1>
+          <p class="page-subtitle">Select an allocation policy and configure supply inputs. The engine automatically distributes available energy across consumer zones.</p>
+        </div>
+        <div class="page-header-right">
+          <div class="sim-mode-bar">
+            <span class="sim-mode-tag">MODE:</span>
+            <div class="mode-pills-sim">
+              <button type="button" class="mode-pill-sim active" id="allocModeAuto" onclick="setEngineMode('auto')">🤖 Auto</button>
+              <button type="button" class="mode-pill-sim" id="allocModeManual" onclick="setEngineMode('manual')">🎛️ Manual</button>
+            </div>
+            <button type="button" class="btn-primary" id="allocApplyBtn" onclick="applyManualChanges()" style="display:none">
+              ⚡ Apply &amp; Recalculate <span class="pending-badge" id="allocPendingBadge">Pending</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Mode Notification Banner -->
+      <div class="manual-mode-banner" id="allocManualBanner">
+        <span>🎛️ <strong>Manual Mode Active:</strong> Sliders and inputs are in draft edit mode. Adjust any values, then click <strong>Apply &amp; Recalculate</strong> to commit them to the network.</span>
+        <button type="button" class="btn-primary small-btn" onclick="applyManualChanges()">⚡ Apply Now</button>
+      </div>
+
+      <div class="allocation-layout">
+        <!-- Left: Supply Inputs & Policy Selector -->
+        <div class="allocation-inputs-col">
+
+          <!-- Supply Configuration (5 Separate Sources) -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">ENERGY SUPPLY (5 SOURCES)</p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="alloc-solar"><span class="source-dot solar-dot"></span>☀️ Solar Generation (kWh)</label>
+              <input type="number" id="alloc-solar" class="data-input" value="40" min="0" max="10000" step="1" oninput="onAllocInputChange()"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="alloc-wind"><span class="source-dot wind-dot"></span>🌬️ Wind Generation (kWh)</label>
+              <input type="number" id="alloc-wind" class="data-input" value="35" min="0" max="10000" step="1" oninput="onAllocInputChange()"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="alloc-hydro"><span class="source-dot hydro-dot"></span>💧 Hydro Generation (kWh)</label>
+              <input type="number" id="alloc-hydro" class="data-input" value="25" min="0" max="10000" step="1" oninput="onAllocInputChange()"/>
+            </div>
+            <div class="total-supply-row renewable-total-row">
+              <span class="total-supply-label">TOTAL RENEWABLE SUPPLY</span>
+              <span class="total-supply-value" id="alloc-renewable-supply">100 kWh</span>
+            </div>
+
+            <div class="input-group" style="margin-top:12px">
+              <label class="input-label" for="alloc-available"><span class="source-dot grid-dot"></span>⚡ External Grid Supply (kWh)</label>
+              <input type="number" id="alloc-available" class="data-input" value="0" min="0" max="10000" step="1" oninput="onAllocInputChange()" aria-describedby="alloc-available-help"/>
+              <p class="input-help" id="alloc-available-help">Imported utility power feed, kept distinct from local renewables.</p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="alloc-battery"><span class="source-dot battery-dot"></span>🔋 Battery Storage Discharge (kWh)</label>
+              <input type="number" id="alloc-battery" class="data-input" value="0" min="0" max="10000" step="1" oninput="onAllocInputChange()"/>
+              <p class="input-help">Stored BESS reserve buffer — not counted as newly generated energy.</p>
+            </div>
+            <div class="total-supply-row main-total-row">
+              <span class="total-supply-label">TOTAL AVAILABLE SUPPLY</span>
+              <span class="total-supply-value" id="alloc-total-supply">100 kWh</span>
+            </div>
+
+            <!-- 🇮🇳 India Live Grid Benchmark Reference -->
+            <div class="india-bench-card" id="allocIndiaBenchmark">
+              <div class="india-bench-header">
+                <span class="india-bench-tag">🇮🇳 LIVE INDIAN GRID MIX REFERENCE</span>
+                <span class="freshness-tag tag-live" id="allocIndiaFreshTag">● Live 5m</span>
+              </div>
+              <p class="india-bench-desc" id="allocIndiaBenchDesc">National Grid Mix (Vidyut Pravah / State SLDCs): Wind 17.0%, Hydro 4.8%, Solar 0.3%, Coal 73.3%.</p>
+              <div class="india-bench-action-row">
+                <span class="india-bench-mw" id="allocIndiaBenchDemand">Demand Met: 200,000 MW</span>
+                <button type="button" class="btn-outline small-btn" onclick="calibrateMicrogridFromIndiaMix()" title="Align microgrid renewable proportions with India's real-time generation mix">⚡ Align Supply Mix</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Allocation Policy -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">SELECT ALLOCATION POLICY</p>
+            </div>
+            <div class="strategy-options" role="radiogroup" aria-label="Allocation Policy">
+              <label class="strategy-option" id="strat-priority-label">
+                <input type="radio" name="strategy" value="priority" id="strat-priority" checked aria-describedby="strat-priority-desc"/>
+                <div class="strategy-option-content">
+                  <div class="strategy-option-header">
+                    <span class="strategy-name">Priority-Based</span>
+                    <span class="strategy-tag">RECOMMENDED</span>
+                  </div>
+                  <p class="strategy-desc" id="strat-priority-desc">Serves consumers in strict priority order. Highest-priority zones receive their full demand before lower-priority zones are considered.</p>
+                </div>
+              </label>
+              <label class="strategy-option" id="strat-proportional-label">
+                <input type="radio" name="strategy" value="proportional" id="strat-proportional" aria-describedby="strat-proportional-desc"/>
+                <div class="strategy-option-content">
+                  <div class="strategy-option-header">
+                    <span class="strategy-name">Proportional</span>
+                  </div>
+                  <p class="strategy-desc" id="strat-proportional-desc">Distributes supply in proportion to each consumer's requested demand. All zones share the shortage equally as a percentage of their need.</p>
+                </div>
+              </label>
+              <label class="strategy-option" id="strat-fairness-label">
+                <input type="radio" name="strategy" value="fairness" id="strat-fairness" aria-describedby="strat-fairness-desc"/>
+                <div class="strategy-option-content">
+                  <div class="strategy-option-header">
+                    <span class="strategy-name">Fairness-Aware</span>
+                  </div>
+                  <p class="strategy-desc" id="strat-fairness-desc">Guarantees a minimum floor allocation to every consumer, then distributes remaining supply by priority weight. Balances equity with urgency.</p>
+                </div>
+              </label>
+            </div>
+
+            <div class="alloc-auto-note note-normal" id="allocAutoNote">⚡ Engine active — results update automatically when you change any input above.</div>
+            <div style="padding: var(--space-md)">
+              <button class="btn-primary full-width" id="calcAllocBtn" onclick="calculateAllocation()">Apply &amp; Recalculate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Consumer Demands + Results -->
+        <div class="allocation-results-col">
+
+          <!-- Consumer Demand Inputs -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">CONSUMER DEMAND &amp; PRIORITIES</p>
+            </div>
+            <div class="consumer-inputs">
+              <div class="consumer-input-row" id="consumer-hospital">
+                <div class="consumer-input-meta">
+                  <span class="consumer-type-badge hospital-badge">H</span>
+                  <div>
+                    <p class="consumer-name">Hospital</p>
+                    <p class="consumer-type-label">Critical Infrastructure</p>
+                  </div>
+                </div>
+                <div class="consumer-input-fields">
+                  <div class="input-group tight">
+                    <label class="input-label" for="hosp-demand">Demand (kWh)</label>
+                    <input type="number" id="hosp-demand" class="data-input" value="30" min="0" max="10000" step="1"/>
+                  </div>
+                  <div class="input-group tight">
+                    <label class="input-label" for="hosp-priority">Priority</label>
+                    <select id="hosp-priority" class="data-select">
+                      <option value="1" selected>1 — Highest</option>
+                      <option value="2">2 — High</option>
+                      <option value="3">3 — Medium</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="consumer-divider"></div>
+
+              <div class="consumer-input-row" id="consumer-residential">
+                <div class="consumer-input-meta">
+                  <span class="consumer-type-badge residential-badge">R</span>
+                  <div>
+                    <p class="consumer-name">Residential</p>
+                    <p class="consumer-type-label">Civic &amp; Domestic</p>
+                  </div>
+                </div>
+                <div class="consumer-input-fields">
+                  <div class="input-group tight">
+                    <label class="input-label" for="res-demand">Demand (kWh)</label>
+                    <input type="number" id="res-demand" class="data-input" value="70" min="0" max="10000" step="1"/>
+                  </div>
+                  <div class="input-group tight">
+                    <label class="input-label" for="res-priority">Priority</label>
+                    <select id="res-priority" class="data-select">
+                      <option value="1">1 — Highest</option>
+                      <option value="2" selected>2 — High</option>
+                      <option value="3">3 — Medium</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="consumer-divider"></div>
+
+              <div class="consumer-input-row" id="consumer-industrial">
+                <div class="consumer-input-meta">
+                  <span class="consumer-type-badge industrial-badge">I</span>
+                  <div>
+                    <p class="consumer-name">Industrial</p>
+                    <p class="consumer-type-label">Commercial Operations</p>
+                  </div>
+                </div>
+                <div class="consumer-input-fields">
+                  <div class="input-group tight">
+                    <label class="input-label" for="ind-demand">Demand (kWh)</label>
+                    <input type="number" id="ind-demand" class="data-input" value="50" min="0" max="10000" step="1"/>
+                  </div>
+                  <div class="input-group tight">
+                    <label class="input-label" for="ind-priority">Priority</label>
+                    <select id="ind-priority" class="data-select">
+                      <option value="1">1 — Highest</option>
+                      <option value="2">2 — High</option>
+                      <option value="3" selected>3 — Medium</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Table -->
+          <div class="config-card" id="allocResultsCard">
+            <div class="config-card-header">
+              <p class="config-title">ALLOCATION RESULTS</p>
+              <span class="config-subtitle" id="allocStrategyLabel">Priority-Based Policy</span>
+            </div>
+            <div class="results-table-wrapper">
+              <table class="results-table" id="allocResultsTable">
+                <thead>
+                  <tr>
+                    <th>Consumer</th>
+                    <th>Requested (kWh)</th>
+                    <th>Priority</th>
+                    <th>Allocated (kWh)</th>
+                    <th>Unmet (kWh)</th>
+                  </tr>
+                </thead>
+                <tbody id="allocResultsBody">
+                  <tr>
+                    <td><span class="table-consumer hospital-badge-sm">H</span> Hospital</td>
+                    <td>30</td><td><span class="priority-badge">P1</span></td>
+                    <td class="alloc-cell">30</td><td class="unmet-cell">0</td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-consumer residential-badge-sm">R</span> Residential</td>
+                    <td>70</td><td><span class="priority-badge">P2</span></td>
+                    <td class="alloc-cell">45</td><td class="unmet-cell orange-cell">25</td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-consumer industrial-badge-sm">I</span> Industrial</td>
+                    <td>50</td><td><span class="priority-badge">P3</span></td>
+                    <td class="alloc-cell">25</td><td class="unmet-cell orange-cell">25</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="results-total-row">
+                    <td><strong>TOTAL</strong></td>
+                    <td id="alloc-total-demand">150</td>
+                    <td>—</td>
+                    <td id="alloc-total-allocated" class="alloc-cell">100</td>
+                    <td id="alloc-total-unmet" class="unmet-cell orange-cell">50</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="results-summary" id="allocSummary">
+              <div class="summary-stat">
+                <p class="summary-stat-label">SUPPLY COVERAGE</p>
+                <p class="summary-stat-value" id="alloc-coverage">66.7%</p>
+              </div>
+              <div class="summary-stat">
+                <p class="summary-stat-label">TOTAL SHORTAGE</p>
+                <p class="summary-stat-value orange" id="alloc-shortage">50 kWh</p>
+              </div>
+              <div class="summary-stat">
+                <p class="summary-stat-label">ZONES FULLY MET</p>
+                <p class="summary-stat-value" id="alloc-fully-met">1 / 3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 03: SIMULATION LAB                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page" id="page-simulation" aria-labelledby="simulation-title">
+      <div class="page-header">
+        <div class="page-header-left">
+          <span class="page-eyebrow">SIMULATION LAB · STRESS TESTING &amp; NETWORK EXPERIMENTATION</span>
+          <h1 class="page-title" id="simulation-title">Simulation Lab</h1>
+          <p class="page-subtitle">Stress-test the energy network. Observe shortages. Compare allocation outcomes.</p>
+        </div>
+        <div class="page-header-right">
+          <div class="sim-mode-bar">
+            <span class="sim-mode-tag">MODE:</span>
+            <div class="mode-pills-sim">
+              <button type="button" class="mode-pill-sim active" id="simModeAuto" onclick="setEngineMode('auto')">🤖 Auto</button>
+              <button type="button" class="mode-pill-sim" id="simModeManual" onclick="setEngineMode('manual')">🎛️ Manual</button>
+            </div>
+            <button type="button" class="btn-primary" id="btnApplyRecalculate" onclick="applyManualChanges()" style="display:none">
+              ⚡ Apply &amp; Recalculate <span class="pending-badge" id="pendingChangesBadge">Pending</span>
+            </button>
+          </div>
+          <div class="header-badge" id="simStatusBadge" style="margin-top:6px">
+            <span class="status-dot green" id="monitorDot"></span>
+            <span id="monitorLabel">ENGINE RUNNING</span>
+            &nbsp;·&nbsp;
+            <span id="simStatusText">AUTO ALLOCATION</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Mode Notification Banner -->
+      <div class="manual-mode-banner" id="simManualBanner">
+        <span>🎛️ <strong>Manual Mode Active:</strong> Sliders and inputs are in draft edit mode. Make adjustments across generation sources or consumer zones, then click <strong>Apply &amp; Recalculate</strong>.</span>
+        <button type="button" class="btn-primary small-btn" onclick="applyManualChanges()">⚡ Apply Now</button>
+      </div>
+
+      <!-- ── INDIA REGIONAL STATE SELECTOR & LIVE TELEMETRY BAR ── -->
+      <div class="sim-state-control-bar" id="simStateControlBar">
+        <div class="sim-state-selector-wrap">
+          <label for="simZoneSelect" class="sim-state-label">
+            <span class="flag-icon">🇮🇳</span> REGIONAL STATE GRID:
+          </label>
+          <select id="simZoneSelect" class="data-select sim-zone-select" onchange="onSimZoneChange(this.value)">
+            <option value="IN" selected>🇮🇳 Default / All India (National Grid)</option>
+            <option value="IN-MH">Maharashtra (IN-MH) · Measured SCADA</option>
+            <option value="IN-GJ">Gujarat (IN-GJ) · Merit Order</option>
+            <option value="IN-KA">Karnataka (IN-KA) · Measured SCADA</option>
+            <option value="IN-TN">Tamil Nadu (IN-TN) · Merit Order</option>
+            <option value="IN-UP">Uttar Pradesh (IN-UP) · Merit Order</option>
+            <option value="IN-DL">Delhi (IN-DL) · Measured SCADA</option>
+            <option value="IN-PB">Punjab (IN-PB) · Measured SCADA</option>
+            <option value="IN-CG">Chhattisgarh (IN-CG) · Measured SCADA</option>
+            <option value="IN-RJ">Rajasthan (IN-RJ) · Merit Order</option>
+            <option value="IN-MP">Madhya Pradesh (IN-MP) · Merit Order</option>
+            <option value="IN-TS">Telangana (IN-TS) · Merit Order</option>
+            <option value="IN-AP">Andhra Pradesh (IN-AP) · Merit Order</option>
+            <option value="IN-WB">West Bengal (IN-WB) · Merit Order</option>
+            <option value="IN-HR">Haryana (IN-HR) · Merit Order</option>
+            <option value="IN-BR">Bihar (IN-BR) · Merit Order</option>
+            <option value="IN-OD">Odisha (IN-OD) · Merit Order</option>
+            <option value="IN-KL">Kerala (IN-KL) · Merit Order</option>
+            <option value="IN-JK">Jammu &amp; Kashmir (IN-JK) · Vidyut Pravah</option>
+            <option value="IN-UK">Uttarakhand (IN-UK) · Merit Order</option>
+            <option value="IN-AS">Assam (IN-AS) · Merit Order</option>
+            <option value="IN-JH">Jharkhand (IN-JH) · Merit Order</option>
+            <option value="IN-HP">Himachal Pradesh (IN-HP) · Merit Order</option>
+            <option value="IN-GA">Goa (IN-GA) · Merit Order</option>
+            <option value="IN-PY">Puducherry (IN-PY) · Merit Order</option>
+            <option value="IN-TR">Tripura (IN-TR) · Merit Order</option>
+            <option value="IN-ML">Meghalaya (IN-ML) · Merit Order</option>
+            <option value="IN-CH">Chandigarh (IN-CH) · Merit Order</option>
+            <option value="IN-MN">Manipur (IN-MN) · Merit Order</option>
+            <option value="IN-AR">Arunachal Pradesh (IN-AR) · Merit Order</option>
+            <option value="IN-NL">Nagaland (IN-NL) · Merit Order</option>
+            <option value="IN-MZ">Mizoram (IN-MZ) · Merit Order</option>
+            <option value="IN-SK">Sikkim (IN-SK) · Merit Order</option>
+            <option value="IN-LA">Ladakh (IN-LA) · Vidyut Pravah</option>
+            <option value="IN-DD">Daman &amp; Diu (IN-DD) · Merit Order</option>
+            <option value="IN-DN">Dadra &amp; Nagar Haveli (IN-DN) · Merit Order</option>
+          </select>
+          <button type="button" class="btn-outline small-btn" id="btnSimSyncMix" onclick="calibrateMicrogridFromSimZone()" title="Align microgrid renewable supply proportions with selected state's live generation mix">
+            ⚡ Align State Mix
+          </button>
+        </div>
+
+        <div class="sim-state-telemetry-strip" id="simStateTelemetryStrip">
+          <div class="sim-state-stat" title="Total grid demand met in selected state (MW)">
+            <span class="stat-lbl">DEMAND MET:</span>
+            <span class="stat-val" id="simStateDemandVal">-- MW</span>
+          </div>
+          <div class="sim-state-stat" title="Total monitored generation in selected state (MW)">
+            <span class="stat-lbl">GENERATION:</span>
+            <span class="stat-val" id="simStateGenVal">-- MW</span>
+          </div>
+          <div class="sim-state-stat" title="Zero-carbon renewable generation (MW / %)">
+            <span class="stat-lbl">RENEWABLE:</span>
+            <span class="stat-val green" id="simStateRenewableVal">--</span>
+          </div>
+          <div class="sim-state-stat" title="Grid emission intensity (gCO2/kWh)">
+            <span class="stat-lbl">CARBON:</span>
+            <span class="stat-val orange" id="simStateCarbonVal">--</span>
+          </div>
+          <div class="sim-state-stat" title="Telemetry data classification & source">
+            <span class="stat-lbl">STATUS:</span>
+            <span class="stat-val" id="simStateStatusBadge"><span class="freshness-tag tag-live">● Live</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-state-disclaimer" id="simStateDisclaimer">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span id="simStateDisclaimerText">National Synchronous Grid (Vidyut Pravah / MERIT) · Hospital demand is simulated baseline (Hospital sub-metering is not published by National/State grid telemetry). Priority 1 Protected.</span>
+      </div>
+
+      <!-- ── 24-HOUR DIURNAL TIME-BASED SIMULATION PANEL ── -->
+      <div class="time-sim-panel" id="timeSimPanel">
+        <div class="time-sim-header">
+          <div class="time-sim-title-group">
+            <span class="panel-eyebrow">ENERGY-AWARE DIURNAL PROFILE</span>
+            <h3 class="time-sim-title">24-Hour Simulated Operating Cycle</h3>
+            <p class="time-sim-sub">Deterministic diurnal solar cycle (morning ramp, midday peak, evening drop, night zero) with independent wind thermal dynamics and hydro dispatch.</p>
+          </div>
+          <div class="time-sim-controls">
+            <button type="button" class="btn-primary small-btn" id="timeSimStartBtn" onclick="startTimeSimulation()">▶ Start 24h Cycle</button>
+            <button type="button" class="btn-secondary small-btn" id="timeSimPauseBtn" onclick="pauseTimeSimulation()" style="display:none">⏸ Pause</button>
+            <button type="button" class="btn-outline small-btn" id="timeSimResetBtn" onclick="resetTimeSimulation()">↺ Reset 12:00</button>
+            <button type="button" class="btn-outline small-btn" id="timeSimSyncBtn" onclick="syncSimToRealHour()" title="Synchronize simulation hour with current real-world IST hour">⚡ Sync IST Hour</button>
+
+            <div class="time-clocks-wrapper">
+              <!-- Real-world Indian Standard Time (Asia/Kolkata) Live Clock -->
+              <div class="time-clock-box real-time-box" id="realTimeDisplay" title="Live Clock (Asia/Kolkata timezone, updates every second)">
+                <div class="clock-header">
+                  <span class="clock-badge-label badge-real">REAL TIME (IST)</span>
+                  <span class="live-pulse-dot" title="Live Clock (updates every second)"></span>
+                </div>
+                <div class="clock-body">
+                  <span class="clock-icon">🕒</span>
+                  <span class="clock-time" id="realTimeClockVal">--:--:--</span>
+                  <span class="clock-phase" id="realTimeDateVal">IST (UTC+5:30)</span>
+                </div>
+              </div>
+
+              <!-- 24-Hour Diurnal Simulated Operating Clock -->
+              <div class="time-clock-box sim-time-box time-clock-display" id="timeClockDisplay" title="Simulated operating hour for diurnal profile">
+                <div class="clock-header">
+                  <span class="clock-badge-label badge-sim">SIMULATION TIME</span>
+                  <span class="sim-mode-tag" id="simModeTag">MANUAL</span>
+                </div>
+                <div class="clock-body">
+                  <span class="clock-icon" id="timeClockIcon">☀️</span>
+                  <span class="clock-time" id="timeClockTime">12:00 PM</span>
+                  <span class="clock-phase" id="timeClockPhase">Midday Solar Peak</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="time-scrubber-row">
+          <label class="time-scrubber-label" for="timeScrubber">
+            <span>Simulated Hour:</span>
+            <span class="time-scrubber-val" id="timeScrubberVal">12:00 (Hour 12 of 24)</span>
+          </label>
+          <input type="range" id="timeScrubber" class="time-slider" min="0" max="23" value="12" step="1" oninput="onTimeScrubberChange(this.value)" aria-label="Simulated time of day scrubber" />
+          <div class="time-scrubber-ticks">
+            <span onclick="setSimulatedHour(2)" title="02:00 Night">🌙 02:00 (Night)</span>
+            <span onclick="setSimulatedHour(8)" title="08:00 Morning">🌅 08:00 (Morning)</span>
+            <span onclick="setSimulatedHour(12)" title="12:00 Midday" class="active-tick">☀️ 12:00 (Midday)</span>
+            <span onclick="setSimulatedHour(18)" title="18:00 Evening">🌇 18:00 (Evening)</span>
+            <span onclick="setSimulatedHour(22)" title="22:00 Night">🌙 22:00 (Night)</span>
+          </div>
+        </div>
+
+        <div class="time-sim-disclaimer">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span>Simulated operating conditions — deterministic illustrative profiles based on solar geometry, atmospheric dynamics, and municipal load curves. Not real-world sensor data.</span>
+        </div>
+      </div>
+
+      <!-- ── SCENARIO PRESETS BAR ── -->
+      <div class="scenario-bar" role="radiogroup" aria-label="Simulation Scenario Presets">
+        <span class="scenario-bar-label">SCENARIOS:</span>
+        <div class="scenario-pills">
+          <button class="scenario-pill active" id="scenario-normal" onclick="loadScenario('normal')" aria-pressed="true">
+            <span class="pill-dot"></span>Normal Operations
+          </button>
+          <button class="scenario-pill" id="scenario-solar-drop" onclick="loadScenario('solarDrop')" aria-pressed="false">
+            <span class="pill-dot"></span>Solar Drop
+          </button>
+          <button class="scenario-pill" id="scenario-wind-drop" onclick="loadScenario('windDrop')" aria-pressed="false">
+            <span class="pill-dot"></span>Wind Drop
+          </button>
+          <button class="scenario-pill" id="scenario-hydro-drop" onclick="loadScenario('hydroDrop')" aria-pressed="false">
+            <span class="pill-dot"></span>Hydro Drop
+          </button>
+          <button class="scenario-pill" id="scenario-surge" onclick="loadScenario('demandSurge')" aria-pressed="false">
+            <span class="pill-dot"></span>Demand Surge
+          </button>
+          <button class="scenario-pill warning-pill" id="scenario-severe" onclick="loadScenario('severeShortage')" aria-pressed="false">
+            <span class="pill-dot orange-dot"></span>Critical Shortage
+          </button>
+          <button class="scenario-pill" id="scenario-custom" onclick="loadScenario('custom')" aria-pressed="false">
+            <span class="pill-dot"></span>Custom Scenario
+          </button>
+        </div>
+      </div>
+
+      <!-- ── DYNAMIC SCENARIO EXPLANATION BANNER ── -->
+      <div class="scenario-explanation" id="scenarioExplanationBanner">
+        <div class="explanation-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+            <circle cx="10" cy="10" r="8.5" stroke="#184D38" stroke-width="1.5"/>
+            <path d="M10 9v5M10 6v1.5" stroke="#184D38" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="explanation-content">
+          <span class="explanation-tag">ENGINE ANALYSIS</span>
+          <p class="explanation-text" id="scenarioExplanationText">Supply of 100 kWh is insufficient for total demand of 150 kWh. Shortage of 50 kWh detected. Hospital demand is fully satisfied (30/30 kWh) under Priority 1 protection. Remaining 70 kWh is apportioned between Residential (45 kWh) and Industrial (25 kWh).</p>
+        </div>
+      </div>
+
+      <!-- ── THREE-ZONE LAYOUT ── -->
+      <div class="sim-three-col">
+
+        <!-- ── ZONE 1: CONTROLS COLUMN ── -->
+        <div class="sim-inputs-col">
+
+          <!-- Supply Conditions Card -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">RENEWABLE GENERATION SOURCES</p>
+              <span class="card-header-badge" id="simTotalRenewableBadge">100 kWh</span>
+            </div>
+
+            <!-- Solar Generation -->
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-solar">
+                  <span class="source-dot solar-dot"></span>☀️ Solar Generation
+                </label>
+                <span class="slider-value"><span id="sim-solar-val">40</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-solar" class="energy-slider" min="0" max="150" value="40" step="1" oninput="updateSimSlider('sim-solar', 'sim-solar-val')" aria-label="Solar generation in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>150 kWh</span></div>
+            </div>
+
+            <!-- Wind Generation -->
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-wind">
+                  <span class="source-dot wind-dot"></span>🌬️ Wind Generation
+                </label>
+                <span class="slider-value"><span id="sim-wind-val">35</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-wind" class="energy-slider" min="0" max="150" value="35" step="1" oninput="updateSimSlider('sim-wind', 'sim-wind-val')" aria-label="Wind generation in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>150 kWh</span></div>
+            </div>
+
+            <!-- Hydro Generation -->
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-hydro">
+                  <span class="source-dot hydro-dot"></span>💧 Hydro Generation
+                </label>
+                <span class="slider-value"><span id="sim-hydro-val">25</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-hydro" class="energy-slider" min="0" max="150" value="25" step="1" oninput="updateSimSlider('sim-hydro', 'sim-hydro-val')" aria-label="Hydro generation in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>150 kWh</span></div>
+            </div>
+
+            <!-- Total Renewable Supply Subtotal -->
+            <div class="total-supply-row renewable-total-row">
+              <span class="total-supply-label">TOTAL RENEWABLE SUPPLY</span>
+              <span class="total-supply-value" id="sim-total-renewable">100 kWh</span>
+            </div>
+
+            <!-- External Grid Supply (Imported Utility Grid) -->
+            <div class="external-grid-section" style="border-top:1px dashed rgba(24,77,56,0.18); margin-top:10px; padding-top:10px;">
+              <div class="storage-section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="panel-eyebrow">UTILITY IMPORT (EXTERNAL GRID)</span>
+                <span class="telemetry-live-pill" id="simIndiaGridPill" title="Live Indian Transmission Grid Met Demand">🇮🇳 IN GRID: 200,000 MW MET · 50 Hz</span>
+              </div>
+              <div class="slider-group" style="border-bottom:none;padding-top:4px">
+                <div class="slider-row">
+                  <label class="slider-label" for="sim-grid">
+                    <span class="source-dot grid-dot"></span>⚡ External Grid Supply (kWh)
+                  </label>
+                  <span class="slider-value"><span id="sim-grid-val">0</span><span class="slider-unit"> kWh</span></span>
+                </div>
+                <input type="range" id="sim-grid" class="energy-slider" min="0" max="150" value="0" step="1" oninput="updateSimSlider('sim-grid', 'sim-grid-val')" aria-label="External utility grid supply in kWh"/>
+                <div class="slider-bounds"><span>0 (Islanded)</span><span>150 kWh (Utility Feed)</span></div>
+                <p class="input-help" style="margin-top:4px;font-size:0.62rem">Simulated utility grid feed (college/homes) — distinct from local renewables.</p>
+              </div>
+            </div>
+
+            <!-- Optional Battery Storage Component -->
+            <div class="storage-optional-section">
+              <div class="storage-section-header">
+                <span class="panel-eyebrow">STORAGE COMPONENT (OPTIONAL BUFFER)</span>
+              </div>
+              <div class="slider-group" style="border-bottom:none;padding-top:4px">
+                <div class="slider-row">
+                  <label class="slider-label" for="sim-battery">
+                    <span class="source-dot battery-dot"></span>🔋 Battery Storage (BESS Reserve)
+                  </label>
+                  <span class="slider-value"><span id="sim-battery-val">0</span><span class="slider-unit"> kWh</span></span>
+                </div>
+                <input type="range" id="sim-battery" class="energy-slider" min="0" max="100" value="0" step="1" oninput="updateSimSlider('sim-battery', 'sim-battery-val')" aria-label="Battery storage in kWh"/>
+                <div class="slider-bounds"><span>0 (Standby)</span><span>100 kWh (Reserve)</span></div>
+                <p class="input-help" style="margin-top:4px;font-size:0.62rem">Stored reserve buffer — not counted as newly generated renewable electricity.</p>
+              </div>
+            </div>
+
+            <div class="total-supply-row main-total-row">
+              <span class="total-supply-label">TOTAL AVAILABLE SUPPLY</span>
+              <span class="total-supply-value" id="sim-total-supply">100 kWh</span>
+            </div>
+          </div>
+
+          <!-- STEP 8: SEPARATE SOLAR, WIND & HYDRO SIMULATION CONTROLS -->
+          <div class="config-card source-micro-sim-card">
+            <div class="config-card-header">
+              <p class="config-title">SOURCE OPERATING CONDITIONS</p>
+              <span class="card-header-badge">LIVE CONTROLS</span>
+            </div>
+            
+            <!-- Solar PV Micro-Sim -->
+            <div class="source-sim-box">
+              <div class="source-sim-header">
+                <span>☀️ SOLAR PV SIMULATION</span>
+                <span class="source-sim-val" id="solarSimCondition">850 W/m² · 21.4% Eff</span>
+              </div>
+              <div class="source-sim-row">
+                <label class="source-sim-label" for="solarIrradianceSelect">Sunlight Irradiance:</label>
+                <select id="solarIrradianceSelect" class="source-sim-select" onchange="onSolarConditionChange()">
+                  <option value="peak">Peak Midday (1000 W/m² - 100%)</option>
+                  <option value="clear" selected>Clear Daylight (850 W/m² - 80%)</option>
+                  <option value="overcast">Overcast Skies (400 W/m² - 35%)</option>
+                  <option value="twilight">Twilight / Dawn (100 W/m² - 10%)</option>
+                  <option value="night">Night Time (0 W/m² - 0%)</option>
+                </select>
+              </div>
+              <div class="source-sim-row" style="margin-top:6px;">
+                <label class="source-sim-label">Fault Condition:</label>
+                <button type="button" class="source-sim-toggle" id="btnSolarFault" onclick="toggleSolarFault()">✓ Panels Normal</button>
+              </div>
+            </div>
+
+            <!-- Wind Turbine Micro-Sim -->
+            <div class="source-sim-box" style="margin-top:10px;">
+              <div class="source-sim-header">
+                <span>🌬️ WIND TURBINE SIMULATION</span>
+                <span class="source-sim-val" id="windSimCondition">8.5 m/s · 3 Turbines</span>
+              </div>
+              <div class="source-sim-row">
+                <label class="source-sim-label" for="windSpeedSlider">Wind Velocity:</label>
+                <input type="range" id="windSpeedSlider" class="energy-slider" min="0" max="25" value="8" step="1" oninput="onWindSpeedChange(this.value)" style="margin: 3px 0;"/>
+                <div class="slider-bounds"><span>0 m/s (Calm)</span><span id="windSpeedVal">8 m/s</span><span>25 m/s (Cutoff)</span></div>
+              </div>
+              <div class="source-sim-row" style="margin-top:4px; font-size:0.65rem; color:var(--text-muted); font-family:'Space Mono',monospace;">
+                <span>ACTIVE ROTORS: T1: ON · T2: ON · T3: ON</span>
+              </div>
+            </div>
+
+            <!-- Hydro Generator Micro-Sim -->
+            <div class="source-sim-box" style="margin-top:10px;">
+              <div class="source-sim-header">
+                <span>💧 HYDRO GENERATOR SIMULATION</span>
+                <span class="source-sim-val" id="hydroSimCondition">Head 45m · 0.85 m³/s</span>
+              </div>
+              <div class="source-sim-row">
+                <label class="source-sim-label" for="hydroGateSelect">Water Flow Gate:</label>
+                <select id="hydroGateSelect" class="source-sim-select" onchange="onHydroGateChange()">
+                  <option value="100">Full Gate Open (1.20 m³/s - 100%)</option>
+                  <option value="75" selected>Normal Dispatch (0.85 m³/s - 75%)</option>
+                  <option value="40">Low Reservoir Flow (0.40 m³/s - 40%)</option>
+                  <option value="0">Gate Closed / Maintenance (0%)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demand Conditions Card -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">CONSUMER DEMAND</p>
+              <span class="card-header-badge" id="simTotalDemandBadge">150 kWh</span>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-hosp-demand">
+                  <span class="consumer-type-badge hospital-badge sm-badge">H</span>
+                  Hospital Demand <span class="demand-source-tag" title="State and national grid telemetry report aggregate utility demand in MW; facility-level sub-metering is not published. Hospital demand is configured as a simulated protected baseline in kWh.">(SIMULATED BASELINE)</span>
+                </label>
+                <span class="slider-value"><span id="sim-hosp-val">30</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-hosp-demand" class="energy-slider" min="0" max="200" value="30" step="1" oninput="updateSimSlider('sim-hosp-demand', 'sim-hosp-val')" aria-label="Hospital demand in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>200 kWh</span></div>
+              <p class="slider-help-note">Priority 1 Protected. Facility-level hospital consumption is not published in state transmission feeds; preserved as simulated baseline.</p>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-res-demand">
+                  <span class="consumer-type-badge residential-badge sm-badge">R</span>
+                  Residential Demand
+                </label>
+                <span class="slider-value"><span id="sim-res-val">70</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-res-demand" class="energy-slider" min="0" max="300" value="70" step="1" oninput="updateSimSlider('sim-res-demand', 'sim-res-val')" aria-label="Residential demand in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>300 kWh</span></div>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-row">
+                <label class="slider-label" for="sim-ind-demand">
+                  <span class="consumer-type-badge industrial-badge sm-badge">I</span>
+                  Industrial Demand
+                </label>
+                <span class="slider-value"><span id="sim-ind-val">50</span><span class="slider-unit"> kWh</span></span>
+              </div>
+              <input type="range" id="sim-ind-demand" class="energy-slider" min="0" max="300" value="50" step="1" oninput="updateSimSlider('sim-ind-demand', 'sim-ind-val')" aria-label="Industrial demand in kWh"/>
+              <div class="slider-bounds"><span>0</span><span>300 kWh</span></div>
+            </div>
+
+            <div class="total-supply-row">
+              <span class="total-supply-label">TOTAL CONSUMER DEMAND</span>
+              <span class="total-supply-value" id="sim-total-demand">150 kWh</span>
+            </div>
+          </div>
+
+          <!-- Lab Quick Actions -->
+          <div class="sim-actions-compact">
+            <button class="btn-primary full-width" id="runSimBtn" onclick="runSimulation()">▶ Recalculate Now</button>
+            <div class="sim-btn-row">
+              <button class="btn-secondary" id="resetSimBtn" onclick="resetSimulation()">Reset Defaults</button>
+              <button class="btn-outline" id="compareBaselineBtn" onclick="compareBaseline()">Save Baseline</button>
+            </div>
+            <div class="sim-btn-row" style="margin-top:6px">
+              <button type="button" class="btn-outline small-btn" id="exportSimCsvBtn" onclick="exportSimulationCSV()" title="Export current simulation data to CSV format">📥 Export CSV</button>
+              <button type="button" class="btn-outline small-btn" id="exportSimJsonBtn" onclick="exportSimulationJSON()" title="Export current simulation data to JSON format">📥 Export JSON</button>
+            </div>
+            <div class="sim-monitor-row" style="margin-top:4px">
+              <span class="monitor-status-label">AUTO-MONITOR:</span>
+              <button class="btn-primary small-btn" id="monitorStartBtn2" onclick="startMonitor()">▶ Run</button>
+              <button class="btn-secondary small-btn" id="monitorPauseBtn2" onclick="pauseMonitor()">⏸ Pause</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ZONE 2: LIVE NETWORK DIAGRAM COLUMN ── -->
+        <div class="sim-network-col">
+          <div class="network-panel">
+            <div class="network-panel-header">
+              <div>
+                <span class="panel-eyebrow">LIVE TOPOLOGY</span>
+                <p class="panel-title">Electricity Network Visualisation</p>
+              </div>
+              <span class="network-state-badge" id="networkStateBadge">DEFICIT ACTIVE</span>
+            </div>
+
+            <div class="network-diagram-wrap">
+              <svg id="simNetworkSvg" viewBox="0 0 540 500" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Renewable energy network flow topology diagram">
+                <defs>
+                  <!-- Arrow Markers -->
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 8 5 L 0 9 z" fill="#184D38"/>
+                  </marker>
+                  <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 8 5 L 0 9 z" fill="#F28C38"/>
+                  </marker>
+                </defs>
+
+                <!-- Flow Connection Lines: 5 Sources -> Hub -->
+                <!-- 1. Solar to Hub -->
+                <line x1="115" y1="46" x2="210" y2="195" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-solar" marker-end="url(#arrow-green)"/>
+                <rect x="135" y="85" width="56" height="17" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="163" y="97" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-solar-line-label">40 kWh</text>
+
+                <!-- 2. Wind to Hub -->
+                <line x1="115" y1="124" x2="210" y2="205" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-wind" marker-end="url(#arrow-green)"/>
+                <rect x="135" y="145" width="56" height="17" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="163" y="157" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-wind-line-label">35 kWh</text>
+
+                <!-- 3. Hydro to Hub -->
+                <line x1="115" y1="202" x2="210" y2="215" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-hydro" marker-end="url(#arrow-green)"/>
+                <rect x="135" y="195" width="56" height="17" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="163" y="207" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-hydro-line-label">25 kWh</text>
+
+                <!-- 4. External Grid to Hub -->
+                <line x1="115" y1="280" x2="210" y2="225" stroke="#184D38" stroke-width="2.5" class="flow-line idle" id="net-line-grid" marker-end="url(#arrow-green)"/>
+                <rect x="135" y="245" width="56" height="17" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="163" y="257" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-grid-line-label">0 kWh</text>
+
+                <!-- 5. Battery to Hub -->
+                <line x1="115" y1="358" x2="210" y2="235" stroke="#184D38" stroke-width="2.5" class="flow-line idle" id="net-line-battery" marker-end="url(#arrow-green)"/>
+                <rect x="135" y="305" width="56" height="17" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="163" y="317" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-battery-line-label">0 kWh</text>
+
+                <!-- Flow Connection Lines: Hub -> Consumers -->
+                <!-- Hub to Hospital -->
+                <line x1="330" y1="195" x2="415" y2="65" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-hosp" marker-end="url(#arrow-green)"/>
+                <rect x="345" y="110" width="60" height="18" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="375" y="123" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-hosp-line-label">30 kWh</text>
+
+                <!-- Hub to Residential -->
+                <line x1="330" y1="215" x2="415" y2="205" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-res" marker-end="url(#arrow-green)"/>
+                <rect x="345" y="196" width="60" height="18" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="375" y="209" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-res-line-label">45 kWh</text>
+
+                <!-- Hub to Industrial -->
+                <line x1="330" y1="235" x2="415" y2="345" stroke="#184D38" stroke-width="2.5" class="flow-line" id="net-line-ind" marker-end="url(#arrow-green)"/>
+                <rect x="345" y="280" width="60" height="18" fill="#F5F1E8" stroke="#184D38" stroke-width="1" rx="2"/>
+                <text x="375" y="293" fill="#184D38" font-family="'Space Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" id="net-ind-line-label">25 kWh</text>
+
+                <!-- 5 SOURCE NODES (Left Column) -->
+                <!-- 1. Solar PV -->
+                <g class="network-node" transform="translate(15, 20)">
+                  <rect x="0" y="0" width="100" height="52" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                  <rect x="0" y="0" width="100" height="16" fill="#184D38"/>
+                  <text x="6" y="12" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700">☀️ SOLAR PV</text>
+                  <text x="6" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-solar-val">40</text>
+                  <text x="30" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="9">kWh</text>
+                  <text x="6" y="46" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="7.5">PV Array</text>
+                </g>
+
+                <!-- 2. Wind Node -->
+                <g class="network-node" transform="translate(15, 98)">
+                  <rect x="0" y="0" width="100" height="52" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                  <rect x="0" y="0" width="100" height="16" fill="#184D38"/>
+                  <text x="6" y="12" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700">🌬️ WIND</text>
+                  <text x="6" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-wind-val">35</text>
+                  <text x="30" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="9">kWh</text>
+                  <text x="6" y="46" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="7.5">Kinetic Turbine</text>
+                </g>
+
+                <!-- 3. Hydro Node -->
+                <g class="network-node" transform="translate(15, 176)">
+                  <rect x="0" y="0" width="100" height="52" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                  <rect x="0" y="0" width="100" height="16" fill="#184D38"/>
+                  <text x="6" y="12" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700">💧 HYDRO</text>
+                  <text x="6" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-hydro-val">25</text>
+                  <text x="30" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="9">kWh</text>
+                  <text x="6" y="46" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="7.5">Water Flow</text>
+                </g>
+
+                <!-- 4. External Grid Supply Node -->
+                <g class="network-node" transform="translate(15, 254)">
+                  <rect x="0" y="0" width="100" height="52" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                  <rect x="0" y="0" width="100" height="16" fill="#184D38"/>
+                  <text x="6" y="12" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700" id="net-grid-node-title">⚡ EXT GRID</text>
+                  <text x="6" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-grid-val">0</text>
+                  <text x="24" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="9">kWh</text>
+                  <text x="6" y="46" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="7.5" id="net-grid-node-sub">Utility Feed</text>
+                </g>
+
+                <!-- 5. Battery BESS Node -->
+                <g class="network-node" transform="translate(15, 332)">
+                  <rect x="0" y="0" width="100" height="52" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.6"/>
+                  <rect x="0" y="0" width="100" height="16" fill="#184D38"/>
+                  <text x="6" y="12" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700">🔋 BATTERY</text>
+                  <text x="6" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-battery-val">0</text>
+                  <text x="24" y="34" fill="#184D38" font-family="'Space Mono', monospace" font-size="9">kWh</text>
+                  <text x="6" y="46" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="7.5">BESS Reserve</text>
+                </g>
+
+                <!-- CENTRAL ALLOCATION HUB -->
+                <g class="network-hub" transform="translate(210, 155)">
+                  <rect x="0" y="0" width="120" height="120" rx="6" fill="#184D38" stroke="#184D38" stroke-width="2"/>
+                  <rect x="4" y="4" width="112" height="20" fill="#F5F1E8"/>
+                  <text x="60" y="18" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="8" font-weight="700" letter-spacing="0.5" text-anchor="middle">GRIDWISE ENGINE</text>
+                  <text x="60" y="42" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="7.5" text-anchor="middle">RENEWABLE SUPPLY</text>
+                  <text x="60" y="58" fill="#F5F1E8" font-family="'Space Mono', monospace" font-size="13" font-weight="700" text-anchor="middle" id="net-total-renew-label">100 kWh</text>
+                  <text x="60" y="73" fill="rgba(245,241,232,0.7)" font-family="'Space Grotesk', sans-serif" font-size="7.5" text-anchor="middle">TOTAL AVAILABLE</text>
+                  <text x="60" y="87" fill="#F5F1E8" font-family="'Space Mono', monospace" font-size="11" font-weight="700" text-anchor="middle" id="net-total-supply-label">100 kWh</text>
+                  <line x1="10" y1="94" x2="110" y2="94" stroke="#F5F1E8" stroke-width="0.8" stroke-dasharray="3 3"/>
+                  <text x="60" y="106" fill="#F28C38" font-family="'Space Grotesk', sans-serif" font-size="7.5" font-weight="700" text-anchor="middle">DEFICIT STATE</text>
+                  <text x="60" y="117" fill="#F28C38" font-family="'Space Mono', monospace" font-size="10" font-weight="700" text-anchor="middle" id="net-shortage-label">-50 kWh</text>
+                </g>
+
+                <!-- CONSUMER NODES (Right Column) -->
+                <!-- Hospital Node -->
+                <g class="network-node" transform="translate(415, 35)">
+                  <rect x="0" y="0" width="112" height="66" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+                  <rect x="0" y="0" width="112" height="18" fill="#184D38"/>
+                  <text x="8" y="13" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="700" letter-spacing="1">HOSPITAL [P1]</text>
+                  <text x="8" y="38" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-hosp-alloc-label">30/30 kWh</text>
+                  <rect x="8" y="46" width="65" height="14" rx="2" fill="#184D38"/>
+                  <text x="12" y="56" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="7.5" font-weight="700" id="net-hosp-status">100% MET</text>
+                </g>
+                <!-- Hospital Unmet Callout Box -->
+                <g id="net-hosp-unmet-box" style="display:none">
+                  <line x1="470" y1="35" x2="470" y2="18" stroke="#F28C38" stroke-width="1.5" stroke-dasharray="2 2" id="net-hosp-unmet-line"/>
+                  <rect x="420" y="4" width="95" height="16" fill="#F5F1E8" stroke="#F28C38" stroke-width="1.2" rx="2"/>
+                  <text x="467" y="16" fill="#F28C38" font-family="'Space Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="net-hosp-unmet-txt">UNMET: 0 kWh</text>
+                </g>
+
+                <!-- Residential Node -->
+                <g class="network-node" transform="translate(415, 175)">
+                  <rect x="0" y="0" width="112" height="66" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+                  <rect x="0" y="0" width="112" height="18" fill="#184D38"/>
+                  <text x="8" y="13" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="700" letter-spacing="1">RESIDENTIAL [P2]</text>
+                  <text x="8" y="38" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-res-alloc-label">45/70 kWh</text>
+                  <rect x="8" y="46" width="70" height="14" rx="2" fill="#F28C38"/>
+                  <text x="12" y="56" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="7.5" font-weight="700" id="net-res-status">64.3% MET</text>
+                </g>
+                <!-- Residential Unmet Callout Box -->
+                <g id="net-res-unmet-box">
+                  <line x1="470" y1="175" x2="470" y2="155" stroke="#F28C38" stroke-width="1.5" stroke-dasharray="2 2" id="net-res-unmet-line"/>
+                  <rect x="420" y="139" width="102" height="18" fill="#F5F1E8" stroke="#F28C38" stroke-width="1.2" rx="2"/>
+                  <text x="471" y="151" fill="#F28C38" font-family="'Space Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="net-res-unmet-txt">UNMET: 25 kWh</text>
+                </g>
+
+                <!-- Industrial Node -->
+                <g class="network-node" transform="translate(415, 315)">
+                  <rect x="0" y="0" width="112" height="66" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+                  <rect x="0" y="0" width="112" height="18" fill="#184D38"/>
+                  <text x="8" y="13" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="700" letter-spacing="1">INDUSTRIAL [P3]</text>
+                  <text x="8" y="38" fill="#184D38" font-family="'Space Mono', monospace" font-size="13" font-weight="700" id="net-ind-alloc-label">25/50 kWh</text>
+                  <rect x="8" y="46" width="70" height="14" rx="2" fill="#F28C38"/>
+                  <text x="12" y="56" fill="#F5F1E8" font-family="'Space Grotesk', sans-serif" font-size="7.5" font-weight="700" id="net-ind-status">50% MET</text>
+                </g>
+                <!-- Industrial Unmet Callout Box -->
+                <g id="net-ind-unmet-box">
+                  <line x1="470" y1="381" x2="470" y2="399" stroke="#F28C38" stroke-width="1.5" stroke-dasharray="2 2" id="net-ind-unmet-line"/>
+                  <rect x="420" y="399" width="102" height="18" fill="#F5F1E8" stroke="#F28C38" stroke-width="1.2" rx="2"/>
+                  <text x="471" y="411" fill="#F28C38" font-family="'Space Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="net-ind-unmet-txt">UNMET: 25 kWh</text>
+                </g>
+
+                <!-- Flow Legend Bar at bottom -->
+                <g transform="translate(20, 440)">
+                  <line x1="0" y1="10" x2="25" y2="10" stroke="#184D38" stroke-width="2.5" class="flow-line"/>
+                  <text x="30" y="13" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="8.5">Active Flow Particles</text>
+                  <line x1="150" y1="10" x2="175" y2="10" stroke="#F28C38" stroke-width="1.8" stroke-dasharray="3 3"/>
+                  <text x="180" y="13" fill="#F28C38" font-family="'Space Grotesk', sans-serif" font-size="8.5" font-weight="700">Unmet Shortage Deficit</text>
+                  <circle cx="330" cy="10" r="4" fill="#184D38"/>
+                  <text x="338" y="13" fill="#184D38" font-family="'Space Grotesk', sans-serif" font-size="8.5">P1 Priority Protected</text>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Network Summary Strip -->
+            <div class="network-summary-bar">
+              <div class="net-summary-item">
+                <span class="net-summary-label">TOTAL RENEWABLE</span>
+                <span class="net-summary-value" id="netSummaryRenewable">100 kWh</span>
+              </div>
+              <div class="net-summary-item">
+                <span class="net-summary-label">TOTAL DEMAND</span>
+                <span class="net-summary-value" id="netSummaryDemand">150 kWh</span>
+              </div>
+              <div class="net-summary-item">
+                <span class="net-summary-label">SHORTAGE DEFICIT</span>
+                <span class="net-summary-value orange" id="netSummaryShortage">50 kWh</span>
+              </div>
+              <div class="net-summary-item">
+                <span class="net-summary-label">GRID COVERAGE</span>
+                <span class="net-summary-value" id="netSummaryCoverage">66.7%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ZONE 3: RESULTS & BREAKDOWN PANEL ── -->
+        <div class="sim-results-col-new">
+          <div class="sim-results-header">
+            <div>
+              <p class="config-title">ALLOCATION OUTCOMES</p>
+              <span class="sim-strategy-display" id="simStrategyDisplay">POLICY: PRIORITY PROTECTED</span>
+            </div>
+            <span class="sim-scenario-tag" id="simScenarioTag">Normal Operations</span>
+          </div>
+
+          <!-- Key Metrics Grid -->
+          <div class="sim-metrics-grid" id="simMetricsGrid">
+            <div class="sim-metric-card">
+              <p class="sim-metric-label">TOTAL RENEWABLE</p>
+              <p class="sim-metric-value" id="sim-res-renewable">100 kWh</p>
+              <p class="sim-metric-sub" id="sim-res-available-sub">Solar + Wind + Hydro</p>
+              <span id="sim-res-available" style="display:none">100 kWh</span>
+            </div>
+            <div class="sim-metric-card">
+              <p class="sim-metric-label">TOTAL DEMAND</p>
+              <p class="sim-metric-value" id="sim-res-demand">150 kWh</p>
+              <p class="sim-metric-sub">Across 3 consumer zones</p>
+            </div>
+            <div class="sim-metric-card">
+              <p class="sim-metric-label">TOTAL ALLOCATED</p>
+              <p class="sim-metric-value" id="sim-res-allocated">100 kWh</p>
+              <p class="sim-metric-sub">Power distributed to tiers</p>
+            </div>
+            <div class="sim-metric-card">
+              <p class="sim-metric-label">REMAINING SUPPLY</p>
+              <p class="sim-metric-value" id="sim-res-remaining">0 kWh</p>
+              <p class="sim-metric-sub">Unused surplus supply</p>
+            </div>
+            <div class="sim-metric-card shortage-metric">
+              <p class="sim-metric-label">UNMET DEMAND</p>
+              <p class="sim-metric-value orange" id="sim-res-shortage">50 kWh</p>
+              <p class="sim-metric-sub orange-sub" id="sim-res-shortage-sub">Automatic shortage detected</p>
+            </div>
+            <div class="sim-metric-card">
+              <p class="sim-metric-label">SUPPLY COVERAGE</p>
+              <p class="sim-metric-value" id="sim-res-coverage">66.7%</p>
+              <p class="sim-metric-sub">Consumer demand satisfied</p>
+            </div>
+          </div>
+
+          <!-- Renewable Source Contribution Panel -->
+          <div class="sim-contrib-card" id="simContribCard" style="margin-bottom:var(--space-md); border-top:none;">
+            <div class="table-wrap-header" style="padding:4px 0 6px 0; border-bottom:1px solid rgba(24,77,56,0.1); margin-bottom:8px;">
+              <span class="panel-eyebrow">RENEWABLE SOURCE CONTRIBUTION</span>
+            </div>
+            <div class="contrib-grid">
+              <div class="contrib-item">
+                <div class="contrib-item-header">
+                  <span class="contrib-item-name">☀️ SOLAR</span>
+                  <span class="contrib-item-kwh" id="sim-contrib-solar-kwh">40 kWh</span>
+                </div>
+                <span class="contrib-item-pct" id="sim-contrib-solar-val">40.0%</span>
+              </div>
+              <div class="contrib-item">
+                <div class="contrib-item-header">
+                  <span class="contrib-item-name">🌬️ WIND</span>
+                  <span class="contrib-item-kwh" id="sim-contrib-wind-kwh">35 kWh</span>
+                </div>
+                <span class="contrib-item-pct" id="sim-contrib-wind-val">35.0%</span>
+              </div>
+              <div class="contrib-item">
+                <div class="contrib-item-header">
+                  <span class="contrib-item-name">💧 HYDRO</span>
+                  <span class="contrib-item-kwh" id="sim-contrib-hydro-kwh">25 kWh</span>
+                </div>
+                <span class="contrib-item-pct" id="sim-contrib-hydro-val">25.0%</span>
+              </div>
+            </div>
+            <!-- Stacked Proportion Bar -->
+            <div class="contrib-bar-track" title="Source contribution breakdown">
+              <div class="contrib-bar-solar" id="simContribBarSolar" style="width: 40%;"></div>
+              <div class="contrib-bar-wind" id="simContribBarWind" style="width: 35%;"></div>
+              <div class="contrib-bar-hydro" id="simContribBarHydro" style="width: 25%;"></div>
+            </div>
+            <!-- Doughnut Chart Canvas -->
+            <div class="contrib-chart-wrap">
+              <canvas id="simSourceChart" width="220" height="130"></canvas>
+            </div>
+
+            <!-- External Grid Supply & Storage Contribution (Step 3) -->
+            <div class="table-wrap-header" style="padding:10px 0 6px 0; border-bottom:1px solid rgba(24,77,56,0.1); margin-top:10px; margin-bottom:8px;">
+              <span class="panel-eyebrow">UTILITY IMPORT &amp; STORAGE CONTRIBUTION</span>
+            </div>
+            <div class="contrib-grid" style="grid-template-columns: repeat(2, 1fr);">
+              <div class="contrib-item">
+                <div class="contrib-item-header">
+                  <span class="contrib-item-name"><span class="source-dot grid-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;"></span>⚡ EXT GRID</span>
+                  <span class="contrib-item-kwh" id="sim-contrib-grid-kwh">0 kWh</span>
+                </div>
+                <span class="contrib-item-pct" id="sim-contrib-grid-val">0.0%</span>
+              </div>
+              <div class="contrib-item">
+                <div class="contrib-item-header">
+                  <span class="contrib-item-name"><span class="source-dot battery-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;"></span>🔋 BATTERY</span>
+                  <span class="contrib-item-kwh" id="sim-contrib-battery-kwh">0 kWh</span>
+                </div>
+                <span class="contrib-item-pct" id="sim-contrib-battery-val">0.0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consumer Breakdown Table -->
+          <div class="sim-results-table-wrap">
+            <div class="table-wrap-header">
+              <span class="panel-eyebrow">DETAILED BREAKDOWN BY TIER</span>
+            </div>
+            <table class="results-table" id="simBreakdownTable">
+              <thead>
+                <tr>
+                  <th>Consumer Zone</th>
+                  <th>Priority</th>
+                  <th>Requested</th>
+                  <th>Allocated</th>
+                  <th>Unmet</th>
+                  <th>Coverage</th>
+                </tr>
+              </thead>
+              <tbody id="simResultsTableBody">
+                <tr>
+                  <td><strong>Hospital</strong></td>
+                  <td><span class="consumer-type-badge hospital-badge sm-badge">P1</span></td>
+                  <td class="mono-col">30 kWh</td>
+                  <td class="mono-col">30 kWh</td>
+                  <td class="mono-col">0 kWh</td>
+                  <td><span class="status-badge active-badge">100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Residential</strong></td>
+                  <td><span class="consumer-type-badge residential-badge sm-badge">P2</span></td>
+                  <td class="mono-col">70 kWh</td>
+                  <td class="mono-col">45 kWh</td>
+                  <td class="mono-col orange">25 kWh</td>
+                  <td><span class="status-badge">64.3%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Industrial</strong></td>
+                  <td><span class="consumer-type-badge industrial-badge sm-badge">P3</span></td>
+                  <td class="mono-col">50 kWh</td>
+                  <td class="mono-col">25 kWh</td>
+                  <td class="mono-col orange">25 kWh</td>
+                  <td><span class="status-badge">50%</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-total-row">
+                  <td colspan="2"><strong>Total System</strong></td>
+                  <td class="mono-col" id="simTotDemand">150 kWh</td>
+                  <td class="mono-col" id="simTotAllocated">100 kWh</td>
+                  <td class="mono-col orange" id="simTotUnmet">50 kWh</td>
+                  <td id="simTotCoverage">66.7%</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p class="sim-table-footnote"><span class="footnote-mark">*</span> Note: Hospital demand is modeled as simulated baseline (P1 Protected). Upstream transmission and SLDC telemetry does not provide individual facility sub-metering.</p>
+          </div>
+
+          <!-- Consumer Allocation Bars -->
+          <div class="sim-consumer-results" id="simConsumerResults">
+            <div class="sim-consumer-row" id="sim-hosp-result">
+              <div class="sim-consumer-header">
+                <div class="consumer-meta">
+                  <span class="consumer-type-badge hospital-badge sm-badge">H</span>
+                  <div>
+                    <p class="consumer-name">Hospital · Critical Tier</p>
+                    <p class="consumer-type-label">Priority 1 (Protected)</p>
+                  </div>
+                </div>
+                <div class="sim-consumer-nums">
+                  <span class="sim-allocated" id="sim-hosp-alloc">30 kWh</span>
+                  <span class="sim-unmet" id="sim-hosp-unmet">fully met</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="sim-hosp-bar" style="width:100%"></div>
+              </div>
+            </div>
+
+            <div class="sim-consumer-row" id="sim-res-result">
+              <div class="sim-consumer-header">
+                <div class="consumer-meta">
+                  <span class="consumer-type-badge residential-badge sm-badge">R</span>
+                  <div>
+                    <p class="consumer-name">Residential · Community Tier</p>
+                    <p class="consumer-type-label">Priority 2 (Essential)</p>
+                  </div>
+                </div>
+                <div class="sim-consumer-nums">
+                  <span class="sim-allocated" id="sim-res-alloc">45 kWh</span>
+                  <span class="sim-unmet orange" id="sim-res-unmet">25 kWh unmet</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="sim-res-bar" style="width:64.3%"></div>
+              </div>
+            </div>
+
+            <div class="sim-consumer-row" id="sim-ind-result">
+              <div class="sim-consumer-header">
+                <div class="consumer-meta">
+                  <span class="consumer-type-badge industrial-badge sm-badge">I</span>
+                  <div>
+                    <p class="consumer-name">Industrial · Commercial Tier</p>
+                    <p class="consumer-type-label">Priority 3 (Curtailable)</p>
+                  </div>
+                </div>
+                <div class="sim-consumer-nums">
+                  <span class="sim-allocated" id="sim-ind-alloc">25 kWh</span>
+                  <span class="sim-unmet orange" id="sim-ind-unmet">25 kWh unmet</span>
+                </div>
+              </div>
+              <div class="tier-bar-track">
+                <div class="tier-bar-fill green-fill" id="sim-ind-bar" style="width:50%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Baseline Comparison Section -->
+          <div class="baseline-comparison" id="baselineComparison" style="display:none">
+            <div class="config-card-header">
+              <p class="config-title">SAVED BASELINE COMPARISON</p>
+            </div>
+            <div class="baseline-table-wrapper">
+              <table class="results-table" id="baselineTable">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Baseline</th>
+                    <th>Current</th>
+                    <th>Δ Change</th>
+                  </tr>
+                </thead>
+                <tbody id="baselineBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="sample-notice">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="7" stroke="#184D38" stroke-width="1.2"/><path d="M8 7v5M8 5v1" stroke="#184D38" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <span>Simulation model calculates deterministic allocations using weighted max-min fairness. Adjust any slider to observe dynamic redistribution.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 04: ANALYTICS & COMPARISON            -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page" id="page-analytics" aria-labelledby="analytics-title">
+      <div class="page-header">
+        <div class="page-header-left">
+          <span class="page-eyebrow">ANALYTICS · STRATEGY COMPARISON</span>
+          <h1 class="page-title" id="analytics-title">Analytics &amp; Comparison</h1>
+          <p class="page-subtitle">Compare how each allocation policy distributes available supply and examine fairness metrics across consumer zones.</p>
+        </div>
+        <div class="page-header-right">
+          <button class="btn-outline" onclick="refreshAnalytics()">Refresh Charts</button>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- Supply vs Demand -->
+        <div class="chart-panel wide-chart">
+          <div class="chart-panel-header">
+            <p class="chart-title">Allocated Energy vs. Unmet Demand</p>
+            <p class="chart-sub">How available supply is distributed and where shortfalls occur across all consumer zones</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="supplyDemandChart" aria-label="Stacked bar chart showing allocated energy and unmet demand per consumer zone"></canvas>
+          </div>
+        </div>
+
+        <!-- Allocation by Consumer -->
+        <div class="chart-panel">
+          <div class="chart-panel-header">
+            <p class="chart-title">Requested vs. Allocated by Zone</p>
+            <p class="chart-sub">Requested demand compared to energy actually allocated per consumer</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="consumerAllocChart" aria-label="Bar chart comparing requested and allocated energy per consumer zone"></canvas>
+          </div>
+        </div>
+
+        <!-- Unmet Demand -->
+        <div class="chart-panel">
+          <div class="chart-panel-header">
+            <p class="chart-title">Unmet Demand Distribution</p>
+            <p class="chart-sub">Share of total unmet demand borne by each consumer zone</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="unmetDemandChart" aria-label="Doughnut chart showing proportion of unmet demand per consumer zone"></canvas>
+          </div>
+        </div>
+
+        <!-- Strategy Comparison -->
+        <div class="chart-panel wide-chart">
+          <div class="chart-panel-header">
+            <p class="chart-title">Policy Comparison — All Three Strategies</p>
+            <p class="chart-sub">Allocation results for Priority-Based, Proportional, and Fairness-Aware policies using the current simulation inputs</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="strategyCompChart" aria-label="Grouped bar chart comparing allocation results across three policies for each consumer zone"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Strategy Table -->
+      <div class="comparison-table-section">
+        <div class="config-card-header">
+          <p class="config-title">DETAILED POLICY COMPARISON</p>
+          <span class="config-subtitle">Calculated from current inputs using all three algorithms</span>
+        </div>
+        <div class="results-table-wrapper">
+          <table class="results-table comparison-table" id="stratCompTable">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Priority-Based</th>
+                <th>Proportional</th>
+                <th>Fairness-Aware</th>
+              </tr>
+            </thead>
+            <tbody id="stratCompBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Fairness Analysis -->
+      <div class="fairness-panel">
+        <div class="config-card-header">
+          <p class="config-title">FAIRNESS &amp; COVERAGE ANALYSIS</p>
+          <span class="config-subtitle">Gini coefficient and zone coverage metrics per policy</span>
+        </div>
+        <div class="fairness-metrics" id="fairnessMetrics"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- 🇮🇳 INDIA LIVE ELECTRICITY GRID ANALYTICS & STATE COMPARISON -->
+      <!-- Verified Real-Time Data from Vidyut Pravah & MERIT            -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <div class="india-analytics-section" id="indiaAnalyticsSection">
+        <div class="page-header" style="margin-top:var(--space-xl); margin-bottom:var(--space-md); border-bottom:2px solid var(--forest-green); padding-bottom:8px;">
+          <div class="page-header-left">
+            <span class="page-eyebrow">🇮🇳 INDIA TRANSMISSION GRID · REAL-TIME ANALYTICS</span>
+            <h2 class="page-title" style="font-size:1.4rem;">National &amp; State Electricity Analytics</h2>
+            <p class="page-subtitle">Comparative transmission demand, fuel-wise generation telemetry, and carbon intensity metrics across 35 Indian states and union territories.</p>
+          </div>
+          <div class="page-header-right" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div class="telemetry-provenance-tag">
+              <span class="badge-dot green" id="indiaAnalyticsPulseDot"></span>
+              <span id="indiaAnalyticsRefreshStatus" style="font-family:var(--font-mono); font-size:0.68rem; font-weight:700;">5m Cache Active</span>
+            </div>
+            <label for="analyticsZoneSelect" style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--forest-green);">STATE:</label>
+            <select id="analyticsZoneSelect" class="data-select" onchange="onIndiaZoneChange(this.value)" style="font-size:0.75rem; padding:4px 8px; font-weight:600;" aria-label="Select state for energy analytics">
+              <option value="IN" selected>🇮🇳 Default / All India (National Grid)</option>
+              <option value="IN-MH">Maharashtra (IN-MH) · Measured SCADA</option>
+              <option value="IN-GJ">Gujarat (IN-GJ) · Merit Order</option>
+              <option value="IN-KA">Karnataka (IN-KA) · Measured SCADA</option>
+              <option value="IN-TN">Tamil Nadu (IN-TN) · Merit Order</option>
+              <option value="IN-UP">Uttar Pradesh (IN-UP) · Merit Order</option>
+              <option value="IN-DL">Delhi (IN-DL) · Measured SCADA</option>
+              <option value="IN-PB">Punjab (IN-PB) · Measured SCADA</option>
+              <option value="IN-CG">Chhattisgarh (IN-CG) · Measured SCADA</option>
+              <option value="IN-RJ">Rajasthan (IN-RJ) · Merit Order</option>
+              <option value="IN-MP">Madhya Pradesh (IN-MP) · Merit Order</option>
+              <option value="IN-TS">Telangana (IN-TS) · Merit Order</option>
+              <option value="IN-AP">Andhra Pradesh (IN-AP) · Merit Order</option>
+              <option value="IN-WB">West Bengal (IN-WB) · Merit Order</option>
+              <option value="IN-HR">Haryana (IN-HR) · Merit Order</option>
+              <option value="IN-BR">Bihar (IN-BR) · Merit Order</option>
+              <option value="IN-OD">Odisha (IN-OD) · Merit Order</option>
+              <option value="IN-KL">Kerala (IN-KL) · Merit Order</option>
+              <option value="IN-JK">Jammu &amp; Kashmir (IN-JK) · Vidyut Pravah</option>
+              <option value="IN-UK">Uttarakhand (IN-UK) · Merit Order</option>
+              <option value="IN-AS">Assam (IN-AS) · Merit Order</option>
+              <option value="IN-JH">Jharkhand (IN-JH) · Merit Order</option>
+              <option value="IN-HP">Himachal Pradesh (IN-HP) · Merit Order</option>
+              <option value="IN-GA">Goa (IN-GA) · Merit Order</option>
+              <option value="IN-PY">Puducherry (IN-PY) · Merit Order</option>
+              <option value="IN-TR">Tripura (IN-TR) · Merit Order</option>
+              <option value="IN-ML">Meghalaya (IN-ML) · Merit Order</option>
+              <option value="IN-CH">Chandigarh (IN-CH) · Merit Order</option>
+              <option value="IN-MN">Manipur (IN-MN) · Merit Order</option>
+              <option value="IN-AR">Arunachal Pradesh (IN-AR) · Merit Order</option>
+              <option value="IN-NL">Nagaland (IN-NL) · Merit Order</option>
+              <option value="IN-MZ">Mizoram (IN-MZ) · Merit Order</option>
+              <option value="IN-SK">Sikkim (IN-SK) · Merit Order</option>
+              <option value="IN-LA">Ladakh (IN-LA) · Vidyut Pravah</option>
+              <option value="IN-DD">Daman &amp; Diu (IN-DD) · Merit Order</option>
+              <option value="IN-DN">Dadra &amp; Nagar Haveli (IN-DN) · Merit Order</option>
+            </select>
+            <button type="button" class="btn-outline small-btn" onclick="fetchIndiaGridData(appState.indiaGrid.selectedZone, true)" title="Refresh India Grid Telemetry">🔄 Refresh Telemetry</button>
+          </div>
+        </div>
+
+        <!-- KPI Metric Cards Strip -->
+        <div class="india-kpi-grid" style="margin-bottom:var(--space-lg)">
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">DEMAND MET</span>
+              <span class="india-unit-badge">MW</span>
+            </div>
+            <div class="india-kpi-val" id="indiaAnalyticsDemandMet">200,000</div>
+            <div class="india-kpi-sub" id="indiaAnalyticsDemandGwh">≈ 200.00 GWh/h · Vidyut Pravah</div>
+          </div>
+
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">TOTAL GENERATION</span>
+              <span class="india-unit-badge">DISPATCH</span>
+            </div>
+            <div class="india-kpi-val" id="indiaAnalyticsTotalGen">11,671</div>
+            <div class="india-kpi-sub" id="indiaAnalyticsFuelCount">7 Fuel Classes Active</div>
+          </div>
+
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">NET INTER-STATE IMPORT</span>
+              <span class="india-unit-badge">TRANSMISSION</span>
+            </div>
+            <div class="india-kpi-val" id="indiaAnalyticsNetImport">—</div>
+            <div class="india-kpi-sub" id="indiaAnalyticsNetImportSub">Inter-state power interchange</div>
+          </div>
+
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">CLEAN RENEWABLE SHARE</span>
+              <span class="india-unit-badge green-badge">RENEWABLE</span>
+            </div>
+            <div class="india-kpi-val green" id="indiaAnalyticsCleanShare">23.8%</div>
+            <div class="india-kpi-sub" id="indiaAnalyticsCleanMw">2,782 MW Zero-Carbon</div>
+          </div>
+
+          <div class="india-kpi-card">
+            <div class="india-kpi-top">
+              <span class="india-kpi-label">EST. CARBON INTENSITY</span>
+              <span class="india-unit-badge">EMISSIONS</span>
+            </div>
+            <div class="india-kpi-val orange" id="indiaAnalyticsCarbonInt">718</div>
+            <div class="india-kpi-sub">gCO₂/kWh (CEA Baseline)</div>
+          </div>
+        </div>
+
+        <!-- Analytics Charts Row -->
+        <div class="analytics-grid" style="margin-bottom:var(--space-xl)">
+          <!-- Top Indian States Demand Chart -->
+          <div class="chart-panel wide-chart">
+            <div class="chart-panel-header">
+              <p class="chart-title">Top 10 Indian States — Live Electricity Demand Met (MW)</p>
+              <p class="chart-sub">Real-time transmission demand ranking derived from state SLDC feeds and national dispatch (Vidyut Pravah / MERIT)</p>
+            </div>
+            <div class="chart-container" style="height:320px;">
+              <canvas id="indiaStateDemandChart" aria-label="Horizontal bar chart showing top 10 Indian states by electricity demand in MW"></canvas>
+            </div>
+          </div>
+
+          <!-- Energy Source Generation Bar Chart (Requirement 3A & 5) -->
+          <div class="chart-panel" id="indiaSourceBarChartPanel">
+            <div class="chart-panel-header">
+              <p class="chart-title" id="indiaSourceBarChartTitle">Generation by Energy Source (MW)</p>
+              <p class="chart-sub" id="indiaSourceBarChartSub">Measured power generation per reported source category (MW)</p>
+            </div>
+            <div class="chart-container" id="indiaSourceBarContainer" style="height:320px; position:relative;">
+              <canvas id="indiaSourceBarChart" aria-label="Bar chart showing electricity generation by source in MW"></canvas>
+              <div id="indiaSourceBarUnavailable" class="fuel-chart-unavailable" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Energy-Source Share Doughnut Chart (Requirement 3B & 5) -->
+          <div class="chart-panel" id="indiaFuelMixChartPanel">
+            <div class="chart-panel-header">
+              <p class="chart-title" id="indiaFuelMixChartTitle">Energy-Source Share (%)</p>
+              <p class="chart-sub" id="indiaFuelMixChartSub">Source Share (%) = Source Generation ÷ Total Generation Represented × 100</p>
+            </div>
+            <div class="chart-container" id="indiaFuelMixContainer" style="height:320px; position:relative;">
+              <canvas id="indiaFuelMixChart" aria-label="Doughnut chart showing Indian electricity generation mix by fuel"></canvas>
+              <div id="indiaFuelMixUnavailable" class="fuel-chart-unavailable" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- State/Zone Telemetry Comparison Table -->
+        <div class="comparison-table-section">
+          <div class="config-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <p class="config-title">35 INDIAN STATES &amp; TERRITORIES TELEMETRY REPORT</p>
+              <span class="config-subtitle">Comprehensive state-wise demand met, primary data source, and measurement classification</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="text" id="indiaStateSearchInput" placeholder="🔍 Filter states..." oninput="filterIndiaStateTable(this.value)" class="data-input" style="padding:4px 8px; font-size:0.75rem; width:160px; height:28px;" />
+            </div>
+          </div>
+          <div class="results-table-wrapper" style="max-height:420px; overflow-y:auto;">
+            <table class="results-table comparison-table" id="indiaStateTable">
+              <thead>
+                <tr>
+                  <th>Zone Code</th>
+                  <th>State / Region</th>
+                  <th>Demand Met (MW)</th>
+                  <th>Daily Rate (GWh)</th>
+                  <th>Data Source</th>
+                  <th>Classification</th>
+                  <th>Telemetry Timestamp (IST)</th>
+                </tr>
+              </thead>
+              <tbody id="indiaStateTableBody">
+                <!-- Dynamically populated from /api/india/zones -->
+              </tbody>
+            </table>
+          </div>
+          <div class="table-caption" style="margin-top:6px; font-size:0.68rem; color:var(--text-muted); font-family:var(--font-mono);">
+            * Note: SCADA Measured states (MH, DL, KA, PB, CG) reflect direct transmission telemetry. Other states reflect Merit-order dispatch estimates. Zero historical fabrication is enforced.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 05: STATE-WISE ELECTRICITY NETWORK VISUALIZATION -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page" id="page-state-network" aria-labelledby="state-network-title">
+      <div class="page-header" style="flex-wrap:wrap; gap:12px;">
+        <div class="page-header-left">
+          <span class="page-eyebrow">STATE GRID OPERATIONS · NETWORK TOPOLOGY</span>
+          <h1 class="page-title" id="state-network-title">State-Wise Electricity Network Visualization</h1>
+          <p class="page-subtitle">Interactive transmission topology and energy routing connecting generation sources, state grid substation, and consumer tiers.</p>
+        </div>
+        <div class="page-header-right" style="display:flex; align-items:center; flex-wrap:wrap; gap:10px;">
+          <!-- State Selector -->
+          <div class="india-zone-select-wrap">
+            <label for="stateNetworkZoneSelect" class="sim-state-select-label" style="font-family:var(--font-mono); font-size:0.68rem; font-weight:700; color:var(--forest-green); margin-right:6px;">STATE / REGION:</label>
+            <select id="stateNetworkZoneSelect" class="india-zone-select" onchange="onStateNetworkZoneChange(this.value)" aria-label="Select Indian State or National Grid" style="padding:6px 12px; font-family:var(--font-mono); font-weight:700; border:1.5px solid var(--forest-green); background:var(--ivory); color:var(--forest-green); font-size:0.8rem; cursor:pointer;">
+              <option value="IN" selected>🇮🇳 Default / All India (National Grid)</option>
+              <option value="IN-TN">Tamil Nadu</option>
+              <option value="IN-KA">Karnataka</option>
+              <option value="IN-MH">Maharashtra</option>
+              <option value="IN-PB">Punjab</option>
+              <option value="IN-CG">Chhattisgarh</option>
+              <option value="IN-DL">Delhi NCT</option>
+              <option value="IN-GJ">Gujarat</option>
+              <option value="IN-RJ">Rajasthan</option>
+              <option value="IN-UP">Uttar Pradesh</option>
+              <option value="IN-AP">Andhra Pradesh</option>
+              <option value="IN-WB">West Bengal</option>
+            </select>
+          </div>
+
+          <!-- Mode Toggle Pill (State Grid vs Microgrid Simulation) -->
+          <div class="state-network-mode-pills" role="radiogroup" aria-label="Visualization Mode" style="display:inline-flex; border:1.5px solid var(--forest-green); background:var(--ivory); border-radius:3px; overflow:hidden;">
+            <button type="button" id="snModeStateGrid" class="sn-mode-btn active" onclick="setStateNetworkMode('state_grid')" title="Verified live state-level transmission telemetry in MW" style="padding:6px 12px; font-family:var(--font-mono); font-size:0.72rem; font-weight:700; cursor:pointer; border:none; transition:all 0.15s ease;">
+              ⚡ State Grid Mode (Live MW)
+            </button>
+            <button type="button" id="snModeMicrogrid" class="sn-mode-btn" onclick="setStateNetworkMode('microgrid')" title="Simulated local microgrid allocation in kWh" style="padding:6px 12px; font-family:var(--font-mono); font-size:0.72rem; font-weight:700; cursor:pointer; border:none; border-left:1px solid var(--forest-green); transition:all 0.15s ease;">
+              🔬 Microgrid Simulation Mode (kWh)
+            </button>
+          </div>
+
+          <button class="btn-outline" onclick="refreshStateNetworkData(true)" style="padding:6px 12px; font-size:0.75rem; height:34px;">↻ Refresh</button>
+        </div>
+      </div>
+
+      <!-- Mode Explanation & Data Provenance Banner -->
+      <div id="snModeBanner" class="sn-mode-banner state-mode" style="margin-bottom:var(--space-md); padding:10px 16px; border-radius:4px; border:1px solid rgba(24,77,56,0.2); background:rgba(24,77,56,0.05); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span id="snModeBadge" class="sn-badge" style="font-family:var(--font-mono); font-size:0.65rem; font-weight:800; padding:2px 8px; border-radius:2px; background:var(--forest-green); color:#fff; letter-spacing:0.04em;">VERIFIED STATE TELEMETRY</span>
+          <span id="snModeDescription" style="font-size:0.78rem; color:var(--text-dark); line-height:1.4;">
+            Displaying verified state transmission metrics in MW from SLDC/MERIT feeds. Consumer tiers (Hospital, Residential, Industrial) represent GridWise Priority 1 dispatch model, as facility-level sub-metering is unpublished in transmission feeds.
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); white-space:nowrap;">
+          <span id="snDataFreshness" class="freshness-tag tag-live">● Live &lt; 15m</span>
+          <span id="snDataTimestamp">—</span>
+        </div>
+      </div>
+
+      <!-- 4 KPI Metrics Strip -->
+      <div class="india-kpi-grid" style="margin-top:0; margin-bottom:var(--space-md);">
+        <div class="india-kpi-card" id="snKpiDemandCard">
+          <div class="india-kpi-header">
+            <span class="india-kpi-title" id="snKpiDemandTitle">ELECTRICITY DEMAND MET</span>
+            <span class="badge-dot green" id="snKpiDemandDot"></span>
+          </div>
+          <div class="india-kpi-value-row">
+            <span class="india-kpi-value" id="snKpiDemandVal">—</span>
+            <span class="india-kpi-unit" id="snKpiDemandUnit">MW</span>
+          </div>
+          <div class="india-kpi-sub" id="snKpiDemandSub">Transmission Dispatch Met</div>
+          <div class="india-kpi-prov" id="snKpiDemandProv">Source: Vidyut Pravah / MERIT</div>
+        </div>
+
+        <div class="india-kpi-card" id="snKpiGenCard">
+          <div class="india-kpi-header">
+            <span class="india-kpi-title" id="snKpiGenTitle">MONITORED GENERATION</span>
+            <span class="badge-dot green" id="snKpiGenDot"></span>
+          </div>
+          <div class="india-kpi-value-row">
+            <span class="india-kpi-value" id="snKpiGenVal">—</span>
+            <span class="india-kpi-unit" id="snKpiGenUnit">MW</span>
+          </div>
+          <div class="india-kpi-sub" id="snKpiGenSub">Active Monitored Fleet</div>
+          <div class="india-kpi-prov" id="snKpiGenProv">State SLDC / Aggregate Dispatch</div>
+        </div>
+
+        <div class="india-kpi-card" id="snKpiCleanCard">
+          <div class="india-kpi-header">
+            <span class="india-kpi-title" id="snKpiCleanTitle">RENEWABLE &amp; CLEAN SHARE</span>
+            <span class="badge-dot green" id="snKpiCleanDot"></span>
+          </div>
+          <div class="india-kpi-value-row">
+            <span class="india-kpi-value" id="snKpiCleanVal">—</span>
+            <span class="india-kpi-unit" id="snKpiCleanUnit">MW</span>
+          </div>
+          <div class="india-kpi-sub" id="snKpiCleanSub">Zero-Carbon Power Share</div>
+          <div class="india-kpi-prov" id="snKpiCleanProv">Solar · Wind · Hydro · Biomass</div>
+        </div>
+
+        <div class="india-kpi-card" id="snKpiFlowCard">
+          <div class="india-kpi-header">
+            <span class="india-kpi-title" id="snKpiFlowTitle">TRANSMISSION NET IMPORT</span>
+            <span class="badge-dot green" id="snKpiFlowDot"></span>
+          </div>
+          <div class="india-kpi-value-row">
+            <span class="india-kpi-value" id="snKpiFlowVal">—</span>
+            <span class="india-kpi-unit" id="snKpiFlowUnit">MW</span>
+          </div>
+          <div class="india-kpi-sub" id="snKpiFlowSub">Inter-State Grid Interchange</div>
+          <div class="india-kpi-prov" id="snKpiFlowProv">Regional Synchronous Link</div>
+        </div>
+      </div>
+
+      <!-- Main Network Visualization Canvas / Diagram Panel -->
+      <div class="sn-diagram-panel" style="background:var(--ivory); border:1.5px solid var(--border); padding:20px; border-radius:var(--radius-xs); margin-bottom:var(--space-md); box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+        <div class="panel-header" style="margin-bottom:14px;">
+          <div>
+            <span class="panel-eyebrow" id="snDiagramEyebrow">TOPOLOGY ROUTING · ALL INDIA</span>
+            <h2 class="panel-title" id="snDiagramTitle">Electricity Flow &amp; Distribution Topology</h2>
+          </div>
+          <div class="panel-badge" id="snDiagramStatusBadge">SYNCHRONOUS ROUTING ACTIVE</div>
+        </div>
+
+        <!-- Responsive SVG Energy Flow Diagram -->
+        <div class="sn-svg-container" style="width:100%; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+          <svg id="stateNetworkDiagram" viewBox="0 0 940 460" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; max-height:560px; min-height:360px; display:block;">
+            <defs>
+              <pattern id="sn-grid-pat" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#184D38" stroke-width="0.3" opacity="0.18"/>
+              </pattern>
+              <marker id="sn-arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#184D38"/>
+              </marker>
+              <marker id="sn-arrow-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#F28C38"/>
+              </marker>
+            </defs>
+
+            <!-- Background and Grid Pattern -->
+            <rect width="940" height="460" fill="#F5F1E8"/>
+            <rect width="940" height="460" fill="url(#sn-grid-pat)"/>
+
+            <!-- ── LEFT COLUMN: 5 INCOMING GENERATION / INFLOW SOURCES ── -->
+            <!-- 1. Solar PV -->
+            <g id="sn-node-solar" class="diagram-source-node" cursor="pointer">
+              <rect x="25" y="24" width="145" height="58" rx="4" fill="#184D38" stroke="#184D38" stroke-width="1.5"/>
+              <text x="40" y="46" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700">☀️ SOLAR PV</text>
+              <text x="40" y="68" fill="#F28C38" font-family="'Space Mono',monospace" font-size="12" font-weight="700" id="sn-solar-val">— MW</text>
+              <title id="sn-solar-tooltip">Solar Photovoltaic Generation</title>
+            </g>
+            <line x1="170" y1="53" x2="360" y2="210" stroke="#184D38" stroke-width="2.5" class="flow-line" id="sn-flow-solar" marker-end="url(#sn-arrow-green)"/>
+            <text x="260" y="125" fill="#184D38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-flow-solar-lbl">— MW</text>
+
+            <!-- 2. Wind Generation -->
+            <g id="sn-node-wind" class="diagram-source-node" cursor="pointer">
+              <rect x="25" y="96" width="145" height="58" rx="4" fill="#184D38" stroke="#184D38" stroke-width="1.5"/>
+              <text x="40" y="118" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700">🌬️ WIND TURBINES</text>
+              <text x="40" y="140" fill="#F28C38" font-family="'Space Mono',monospace" font-size="12" font-weight="700" id="sn-wind-val">— MW</text>
+              <title id="sn-wind-tooltip">Wind Kinetic Generation</title>
+            </g>
+            <line x1="170" y1="125" x2="360" y2="215" stroke="#184D38" stroke-width="2.5" class="flow-line" id="sn-flow-wind" marker-end="url(#sn-arrow-green)"/>
+            <text x="265" y="168" fill="#184D38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-flow-wind-lbl">— MW</text>
+
+            <!-- 3. Hydro Generation -->
+            <g id="sn-node-hydro" class="diagram-source-node" cursor="pointer">
+              <rect x="25" y="168" width="145" height="58" rx="4" fill="#184D38" stroke="#184D38" stroke-width="1.5"/>
+              <text x="40" y="190" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700">💧 HYDRO POWER</text>
+              <text x="40" y="212" fill="#F28C38" font-family="'Space Mono',monospace" font-size="12" font-weight="700" id="sn-hydro-val">— MW</text>
+              <title id="sn-hydro-tooltip">Hydroelectric Dispatch</title>
+            </g>
+            <line x1="170" y1="197" x2="360" y2="220" stroke="#184D38" stroke-width="2.5" class="flow-line" id="sn-flow-hydro" marker-end="url(#sn-arrow-green)"/>
+            <text x="265" y="208" fill="#184D38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-flow-hydro-lbl">— MW</text>
+
+            <!-- 4. Thermal / Grid Supply / Inflow -->
+            <g id="sn-node-thermal" class="diagram-source-node" cursor="pointer">
+              <rect x="25" y="240" width="145" height="58" rx="4" fill="#184D38" stroke="#184D38" stroke-width="1.5"/>
+              <text x="40" y="262" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700" id="sn-thermal-title">⚡ THERMAL (COAL/GAS)</text>
+              <text x="40" y="284" fill="#F28C38" font-family="'Space Mono',monospace" font-size="12" font-weight="700" id="sn-thermal-val">— MW</text>
+              <title id="sn-thermal-tooltip">Thermal / Baseload Dispatch</title>
+            </g>
+            <line x1="170" y1="269" x2="360" y2="225" stroke="#184D38" stroke-width="2.5" class="flow-line" id="sn-flow-thermal" marker-end="url(#sn-arrow-green)"/>
+            <text x="265" y="255" fill="#184D38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-flow-thermal-lbl">— MW</text>
+
+            <!-- 5. Biomass / Battery BESS / Clean -->
+            <g id="sn-node-other" class="diagram-source-node" cursor="pointer">
+              <rect x="25" y="312" width="145" height="58" rx="4" fill="#184D38" stroke="#184D38" stroke-width="1.5"/>
+              <text x="40" y="334" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="10" font-weight="700" id="sn-other-title">🌿 BIOMASS / OTHER</text>
+              <text x="40" y="356" fill="#F28C38" font-family="'Space Mono',monospace" font-size="12" font-weight="700" id="sn-other-val">— MW</text>
+              <title id="sn-other-tooltip">Biomass &amp; Co-Gen Telemetry</title>
+            </g>
+            <line x1="170" y1="341" x2="360" y2="230" stroke="#184D38" stroke-width="2.5" class="flow-line" id="sn-flow-other" marker-end="url(#sn-arrow-green)"/>
+            <text x="260" y="300" fill="#184D38" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-flow-other-lbl">— MW</text>
+
+            <!-- ── CENTER: GRIDWISE CENTRAL DISPATCH HUB / SUBSTATION ── -->
+            <g id="sn-node-hub" transform="translate(360, 145)" cursor="pointer">
+              <rect x="0" y="0" width="190" height="160" rx="6" fill="#184D38" stroke="#F28C38" stroke-width="2.5"/>
+              <rect x="0" y="0" width="190" height="32" fill="rgba(242,140,56,0.15)"/>
+              <text x="95" y="21" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="700" text-anchor="middle" id="sn-hub-header">GRIDWISE DISPATCH HUB</text>
+              
+              <text x="95" y="55" fill="rgba(245,241,232,0.7)" font-family="'Space Mono',monospace" font-size="8" text-anchor="middle" id="sn-hub-supply-sub">MONITORED SUPPLY</text>
+              <text x="95" y="75" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="15" font-weight="800" text-anchor="middle" id="sn-hub-supply-val">— MW</text>
+
+              <line x1="20" y1="88" x2="170" y2="88" stroke="rgba(245,241,232,0.2)" stroke-width="1"/>
+
+              <text x="95" y="105" fill="rgba(245,241,232,0.7)" font-family="'Space Mono',monospace" font-size="8" text-anchor="middle" id="sn-hub-demand-sub">DEMAND MET</text>
+              <text x="95" y="125" fill="#F28C38" font-family="'Space Mono',monospace" font-size="15" font-weight="800" text-anchor="middle" id="sn-hub-demand-val">— MW</text>
+
+              <!-- Hub Status Badge -->
+              <rect x="25" y="136" width="140" height="18" rx="2" fill="#184D38" id="sn-hub-status-rect"/>
+              <text x="95" y="149" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" text-anchor="middle" id="sn-hub-status-lbl">TELEMETRY MONITORED</text>
+            </g>
+
+            <!-- ── RIGHT COLUMN: 3 CONSUMER TIERS ── -->
+            <!-- Flow Line to Hospital -->
+            <line x1="550" y1="190" x2="720" y2="75" stroke="#184D38" stroke-width="3" class="flow-line" id="sn-flow-hosp" marker-end="url(#sn-arrow-green)"/>
+            <text x="635" y="120" fill="#184D38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" text-anchor="middle" id="sn-flow-hosp-lbl">PROTECTED</text>
+
+            <!-- 1. Hospital [P1] -->
+            <g id="sn-node-hosp" transform="translate(720, 35)" cursor="pointer">
+              <rect x="0" y="0" width="195" height="76" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+              <rect x="0" y="0" width="195" height="22" fill="#184D38"/>
+              <text x="12" y="15" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="9.5" font-weight="700">🏥 HOSPITAL TIER [P1]</text>
+              <rect x="140" y="4" width="48" height="14" rx="2" fill="#F28C38"/>
+              <text x="164" y="14" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="7" font-weight="700" text-anchor="middle">CRITICAL</text>
+
+              <text x="12" y="44" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="700" id="sn-hosp-alloc-val">100% Satisfied</text>
+              <text x="12" y="62" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" id="sn-hosp-sub">Priority 1 Protected Load</text>
+              <title>Hospital Critical Infrastructure Feeder</title>
+            </g>
+
+            <!-- Flow Line to Residential -->
+            <line x1="550" y1="225" x2="720" y2="225" stroke="#184D38" stroke-width="3" class="flow-line" id="sn-flow-res" marker-end="url(#sn-arrow-green)"/>
+            <text x="635" y="217" fill="#184D38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" text-anchor="middle" id="sn-flow-res-lbl">ACTIVE</text>
+
+            <!-- 2. Residential [P2] -->
+            <g id="sn-node-res" transform="translate(720, 185)" cursor="pointer">
+              <rect x="0" y="0" width="195" height="76" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+              <rect x="0" y="0" width="195" height="22" fill="#184D38"/>
+              <text x="12" y="15" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="9.5" font-weight="700">🏘️ RESIDENTIAL TIER [P2]</text>
+              <rect x="145" y="4" width="42" height="14" rx="2" fill="rgba(245,241,232,0.3)"/>
+              <text x="166" y="14" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="7" font-weight="700" text-anchor="middle">CIVIC</text>
+
+              <text x="12" y="44" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="700" id="sn-res-alloc-val">Grid Dispatch Active</text>
+              <text x="12" y="62" fill="var(--text-muted)" font-family="'Space Mono',monospace" font-size="8" id="sn-res-sub">Priority 2 Public Feeder</text>
+              <title>Urban &amp; Municipal Residential Distribution</title>
+            </g>
+
+            <!-- Flow Line to Industrial -->
+            <line x1="550" y1="255" x2="720" y2="375" stroke="#184D38" stroke-width="3" class="flow-line" id="sn-flow-ind" marker-end="url(#sn-arrow-green)"/>
+            <text x="635" y="325" fill="#184D38" font-family="'Space Mono',monospace" font-size="9" font-weight="700" text-anchor="middle" id="sn-flow-ind-lbl">FEEDER</text>
+
+            <!-- 3. Industrial [P3] -->
+            <g id="sn-node-ind" transform="translate(720, 335)" cursor="pointer">
+              <rect x="0" y="0" width="195" height="76" rx="4" fill="#F5F1E8" stroke="#184D38" stroke-width="1.8"/>
+              <rect x="0" y="0" width="195" height="22" fill="#184D38"/>
+              <text x="12" y="15" fill="#F5F1E8" font-family="'Space Grotesk',sans-serif" font-size="9.5" font-weight="700">🏭 INDUSTRIAL TIER [P3]</text>
+              <rect x="135" y="4" width="52" height="14" rx="2" fill="rgba(245,241,232,0.3)"/>
+              <text x="161" y="14" fill="#F5F1E8" font-family="'Space Mono',monospace" font-size="7" font-weight="700" text-anchor="middle">COMMERCIAL</text>
+
+              <text x="12" y="44" fill="#184D38" font-family="'Space Grotesk',sans-serif" font-size="11" font-weight="700" id="sn-ind-alloc-val">Feeder Dispatched</text>
+              <text x="12" y="62" fill="var(--text-muted)" font-family="'Space Mono',monospace" font-size="8" id="sn-ind-sub">Priority 3 Commercial Load</text>
+              <title>High-Voltage Industrial Feeder</title>
+            </g>
+
+            <!-- Legend Bar -->
+            <g transform="translate(25, 420)">
+              <line x1="0" y1="8" x2="26" y2="8" stroke="#184D38" stroke-width="2.5" class="flow-line"/>
+              <text x="32" y="12" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" font-weight="700">ACTIVE FLOW PATH</text>
+
+              <line x1="160" y1="8" x2="186" y2="8" stroke="#F28C38" stroke-width="2" stroke-dasharray="4 3"/>
+              <text x="192" y="12" fill="#F28C38" font-family="'Space Mono',monospace" font-size="8" font-weight="700">UNMET SHORTAGE</text>
+
+              <line x1="320" y1="8" x2="346" y2="8" stroke="#184D38" stroke-width="1.5" stroke-dasharray="2 4" opacity="0.4"/>
+              <text x="352" y="12" fill="rgba(24,77,56,0.6)" font-family="'Space Mono',monospace" font-size="8">IDLE / UNPUBLISHED</text>
+
+              <circle cx="500" cy="8" r="4" fill="#184D38"/>
+              <text x="510" y="12" fill="#184D38" font-family="'Space Mono',monospace" font-size="8" font-weight="700">P1 PROTECTED</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- State-Wise Fuel Streams & Transmission Context Cards -->
+      <div class="comparison-table-section" style="margin-top:var(--space-md); margin-bottom:var(--space-xl);">
+        <div class="config-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <p class="config-title" id="snStreamPanelTitle">EMPIRICAL GENERATION STREAMS &amp; STATE TELEMETRY</p>
+            <span class="config-subtitle" id="snStreamPanelSub">Verified generation disaggregation and transmission interchange details</span>
+          </div>
+          <span class="panel-badge" id="snStreamMethodBadge">MEASURED SCADA</span>
+        </div>
+        <div id="snFuelChipsContainer" style="padding:16px 20px; background:var(--ivory); border:1.5px solid var(--border); border-top:none;">
+          <!-- Dynamically populated with fuel chips or 'Data Unavailable' notice -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PAGE 06: SETTINGS                          -->
+    <!-- ══════════════════════════════════════════ -->
+    <section class="page" id="page-settings" aria-labelledby="settings-title">
+      <div class="page-header">
+        <div class="page-header-left">
+          <span class="page-eyebrow">SIMULATION SETTINGS · DEFAULTS</span>
+          <h1 class="page-title" id="settings-title">Simulation Settings</h1>
+          <p class="page-subtitle">Configure default supply conditions, consumer demand, and allocation preferences used across all pages.</p>
+        </div>
+      </div>
+
+      <div class="settings-layout">
+        <!-- Left Column -->
+        <div class="settings-col">
+
+          <!-- Energy Supply Defaults -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">DEFAULT ENERGY SUPPLY</p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-available">Grid Supply (kWh)</label>
+              <input type="number" id="set-available" class="data-input" value="100" min="0" max="10000" step="1"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-solar">Solar Generation (kWh)</label>
+              <input type="number" id="set-solar" class="data-input" value="0" min="0" max="10000" step="1"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-battery">Battery Contribution (kWh)</label>
+              <input type="number" id="set-battery" class="data-input" value="0" min="0" max="10000" step="1"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-strategy">Default Allocation Policy</label>
+              <select id="set-strategy" class="data-select">
+                <option value="priority" selected>Priority-Based Allocation</option>
+                <option value="proportional">Proportional Allocation</option>
+                <option value="fairness">Fairness-Aware Allocation</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Consumer Priorities -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">CONSUMER PRIORITY ORDER</p>
+            </div>
+            <p class="settings-note">Priority order determines allocation sequence under Priority-Based policy. Lower numbers are served first.</p>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge hospital-badge">H</span>
+                <span>Hospital</span>
+              </div>
+              <select id="set-hosp-priority" class="data-select small-select">
+                <option value="1" selected>Priority 1 — Highest</option>
+                <option value="2">Priority 2 — High</option>
+                <option value="3">Priority 3 — Medium</option>
+              </select>
+            </div>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge residential-badge">R</span>
+                <span>Residential</span>
+              </div>
+              <select id="set-res-priority" class="data-select small-select">
+                <option value="1">Priority 1 — Highest</option>
+                <option value="2" selected>Priority 2 — High</option>
+                <option value="3">Priority 3 — Medium</option>
+              </select>
+            </div>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge industrial-badge">I</span>
+                <span>Industrial</span>
+              </div>
+              <select id="set-ind-priority" class="data-select small-select">
+                <option value="1">Priority 1 — Highest</option>
+                <option value="2">Priority 2 — High</option>
+                <option value="3" selected>Priority 3 — Medium</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fairness Weights -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">FAIRNESS-AWARE WEIGHTS</p>
+            </div>
+            <p class="settings-note">Weights determine how the remaining supply is distributed after the equal floor phase of the Fairness-Aware algorithm. Higher weight = larger share of surplus.</p>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge hospital-badge">H</span>
+                <span>Hospital</span>
+              </div>
+              <select id="set-hosp-weight" class="data-select small-select">
+                <option value="1">Weight 1 — Low</option>
+                <option value="2">Weight 2 — Medium</option>
+                <option value="3" selected>Weight 3 — High</option>
+              </select>
+            </div>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge residential-badge">R</span>
+                <span>Residential</span>
+              </div>
+              <select id="set-res-weight" class="data-select small-select">
+                <option value="1">Weight 1 — Low</option>
+                <option value="2" selected>Weight 2 — Medium</option>
+                <option value="3">Weight 3 — High</option>
+              </select>
+            </div>
+            <div class="priority-config-row">
+              <div class="priority-consumer-label">
+                <span class="consumer-type-badge industrial-badge">I</span>
+                <span>Industrial</span>
+              </div>
+              <select id="set-ind-weight" class="data-select small-select">
+                <option value="1" selected>Weight 1 — Low</option>
+                <option value="2">Weight 2 — Medium</option>
+                <option value="3">Weight 3 — High</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="settings-col">
+
+          <!-- Consumer Demand Defaults -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">DEFAULT CONSUMER DEMAND</p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-hosp-demand">Hospital Default Demand (kWh)</label>
+              <input type="number" id="set-hosp-demand" class="data-input" value="30" min="0" max="10000" step="1"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-res-demand">Residential Default Demand (kWh)</label>
+              <input type="number" id="set-res-demand" class="data-input" value="70" min="0" max="10000" step="1"/>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="set-ind-demand">Industrial Default Demand (kWh)</label>
+              <input type="number" id="set-ind-demand" class="data-input" value="50" min="0" max="10000" step="1"/>
+            </div>
+          </div>
+
+          <!-- System Actions -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">SYSTEM ACTIONS</p>
+            </div>
+            <div class="settings-actions">
+              <div class="settings-action-row">
+                <div>
+                  <p class="action-name">Save Settings</p>
+                  <p class="action-desc">Apply these values as defaults and trigger an immediate recalculation.</p>
+                </div>
+                <button class="btn-primary" id="saveSettingsBtn" onclick="saveSettings()">Save</button>
+              </div>
+              <div class="action-divider"></div>
+              <div class="settings-action-row">
+                <div>
+                  <p class="action-name">Reset Simulation</p>
+                  <p class="action-desc">Return simulation inputs to the Normal Operations scenario.</p>
+                </div>
+                <button class="btn-secondary" id="resetSimulationBtn" onclick="resetAllSimulation()">Reset</button>
+              </div>
+              <div class="action-divider"></div>
+              <div class="settings-action-row">
+                <div>
+                  <p class="action-name">Restore Factory Defaults</p>
+                  <p class="action-desc">Revert all settings to their original GridWise configuration.</p>
+                </div>
+                <button class="btn-outline" id="restoreDefaultsBtn" onclick="restoreDefaults()">Restore</button>
+              </div>
+              <div class="action-divider"></div>
+              <div class="settings-action-row">
+                <div>
+                  <p class="action-name">Terminal Sign Out</p>
+                  <p class="action-desc">Terminate current operator session and lock dispatch controls.</p>
+                </div>
+                <button class="btn-secondary auth-sign-out-btn" id="settingsSignOutBtn">Sign Out</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🇮🇳 India Energy Data Proxy & Cache Configuration -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">🇮🇳 INDIA ENERGY DATA PROXY &amp; CACHE</p>
+            </div>
+            <p class="settings-note">Express.js proxy gateway caching Indian transmission telemetry with 5-minute TTL and offline snapshot fallback.</p>
+            <div class="about-meta">
+              <div class="about-row"><span class="about-label">UPSTREAM API</span><span class="about-value">india-energy-data.vercel.app</span></div>
+              <div class="about-row"><span class="about-label">GATEWAY PORT</span><span class="about-value" id="settingsProxyPort">ONLINE (:3001)</span></div>
+              <div class="about-row"><span class="about-label">CACHE STRATEGY</span><span class="about-value">5-Minute In-Memory TTL</span></div>
+              <div class="about-row"><span class="about-label">TELEMETRY SOURCES</span><span class="about-value">Vidyut Pravah, MERIT, SLDCs</span></div>
+            </div>
+            <div style="margin-top:12px;">
+              <button type="button" class="btn-outline small-btn full-width" onclick="clearIndiaApiCache()" title="Purge in-memory proxy cache and trigger immediate fresh upstream fetch">🧹 Purge Proxy Cache &amp; Re-Fetch</button>
+            </div>
+          </div>
+
+          <!-- 🐘 PostgreSQL Database Persistence Card -->
+          <div class="config-card">
+            <div class="config-card-header">
+              <p class="config-title">🐘 POSTGRESQL DATABASE PERSISTENCE</p>
+            </div>
+            <p class="settings-note">Relational database storage engine archiving simulation runs, user settings, JWT sessions, and telemetry audit trails.</p>
+            <div class="about-meta">
+              <div class="about-row"><span class="about-label">DATABASE</span><span class="about-value" id="settingsDbName">gridwise_db</span></div>
+              <div class="about-row"><span class="about-label">STATUS</span><span class="about-value" id="settingsDbStatus">CHECKING...</span></div>
+              <div class="about-row"><span class="about-label">CONNECTION POOL</span><span class="about-value">pg (Max 20 clients)</span></div>
+              <div class="about-row"><span class="about-label">STORAGE FALLBACK</span><span class="about-value">Auto-Switching Resilient RAM</span></div>
+            </div>
+            <div style="margin-top:12px;">
+              <button type="button" class="btn-outline small-btn full-width" onclick="checkDatabaseStatus()" title="Test PostgreSQL connectivity and synchronization">🔍 Check Database Connectivity</button>
+            </div>
+          </div>
+
+          <!-- About -->
+          <div class="config-card about-card">
+            <div class="config-card-header">
+              <p class="config-title">ABOUT GRIDWISE</p>
+            </div>
+            <p class="settings-note">GridWise is an intelligent energy allocation and simulation platform. It demonstrates automatic shortage detection and energy distribution between hospitals, residential communities, and industrial facilities — without requiring manual intervention.</p>
+            <div class="about-meta">
+              <div class="about-row"><span class="about-label">VERSION</span><span class="about-value">GRID OS · V2.0</span></div>
+              <div class="about-row"><span class="about-label">ENGINE</span><span class="about-value">Auto-Allocation v2</span></div>
+              <div class="about-row"><span class="about-label">PURPOSE</span><span class="about-value">Illustrative Simulation</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div class="toast" id="settingsToast" role="alert" aria-live="polite">
+        <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><circle cx="8" cy="8" r="7" stroke="#F5F1E8" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#F5F1E8" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span id="toastMessage">Settings saved successfully.</span>
+      </div>
+    </section>
+
+  </main>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

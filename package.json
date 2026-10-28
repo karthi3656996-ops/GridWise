@@ -1,0 +1,19 @@
+{
+  "name": "gridwise-energy-os",
+  "version": "2.0.0",
+  "description": "GridWise — Intelligent Energy Allocation & Simulation Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -e \"console.log('Use in-browser window.GridWiseTests.run()')\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.1"
+  },
+  "author": "GridWise Team",
+  "license": "MIT"
+}
